@@ -6,7 +6,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.setGlobalPrefix('gestion-documentos/api/v1');
   app.enableCors({
-    origin: '*',
+    origin: 'http://localhost:4200',
     methods: '*',
     allowedHeaders: '*',
     credentials: false,
