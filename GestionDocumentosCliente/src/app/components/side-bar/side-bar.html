@@ -1,0 +1,83 @@
+<mat-sidenav-container class="shell">
+  <mat-sidenav #sidenav mode="over" class="sidenav">
+    <div class="sidenav-contenido">
+      <mat-nav-list>
+        @for (s of secciones; track s.ruta) {
+          <a
+            mat-list-item
+            [routerLink]="s.ruta"
+            routerLinkActive
+            #rla="routerLinkActive"
+            [activated]="rla.isActive"
+          >
+            <mat-icon matListItemIcon>{{ s.icono }}</mat-icon>
+            <span matListItemTitle>{{ s.nombre }}</span>
+          </a>
+        }
+      </mat-nav-list>
+
+      <mat-divider />
+
+      <mat-tree #tree [dataSource]="reportes" [childrenAccessor]="childrenAccessor" class="arbol">
+        <mat-tree-node
+          *matTreeNodeDef="let nodo"
+          matTreeNodePadding
+          [matTreeNodePaddingIndent]="16"
+        >
+          <button mat-icon-button disabled aria-hidden="true"></button>
+          <a class="enlace-nodo" [routerLink]="nodo.ruta" routerLinkActive="activo">
+            {{ nodo.nombre }}
+          </a>
+        </mat-tree-node>
+
+        <mat-tree-node
+          *matTreeNodeDef="let nodo; when: tieneHijos"
+          matTreeNodePadding
+          [matTreeNodePaddingIndent]="16"
+          [cdkTreeNodeTypeaheadLabel]="nodo.nombre"
+        >
+          <button mat-icon-button matTreeNodeToggle [attr.aria-label]="'Alternar ' + nodo.nombre">
+            <mat-icon>{{ tree.isExpanded(nodo) ? 'expand_more' : 'chevron_right' }}</mat-icon>
+          </button>
+          <mat-icon class="icono-nodo">{{ nodo.icono }}</mat-icon>
+          <span class="nombre-nodo">{{ nodo.nombre }}</span>
+        </mat-tree-node>
+      </mat-tree>
+
+      <span class="relleno"></span>
+
+      <mat-divider />
+
+      <mat-nav-list>
+        <a
+          mat-list-item
+          routerLink="/perfil"
+          routerLinkActive
+          #rlp="routerLinkActive"
+          [activated]="rlp.isActive"
+        >
+          <mat-icon matListItemIcon>account_circle</mat-icon>
+          <span matListItemTitle>Perfil</span>
+        </a>
+        <a mat-list-item (click)="cerrarSesion()" tabindex="0" (keydown.enter)="cerrarSesion()">
+          <mat-icon matListItemIcon>logout</mat-icon>
+          <span matListItemTitle>Cerrar sesión</span>
+        </a>
+      </mat-nav-list>
+    </div>
+  </mat-sidenav>
+
+  <mat-sidenav-content class="contenido">
+    <mat-toolbar class="barra">
+      <button mat-icon-button (click)="sidenav.toggle()" aria-label="Abrir menú">
+        <mat-icon>menu</mat-icon>
+      </button>
+
+      <span class="titulo">Gestión documentos</span>
+    </mat-toolbar>
+
+    <main class="vista">
+      <router-outlet />
+    </main>
+  </mat-sidenav-content>
+</mat-sidenav-container>

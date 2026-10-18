@@ -7,7 +7,7 @@ import { EncriptadorService } from './seguridad/encriptador/encriptador.service.
 import { LoginModule } from './login/login.module.js';
 import { UsuarioModule } from './usuario/usuario.module.js';
 import { APP_GUARD } from '@nestjs/core';
-import { AuthGuard } from './guards/auth/auth.guard.js';
+import { AuthGuard } from './login/auth/auth.guard.js';
 import { MongooseModule } from '@nestjs/mongoose';
 
 @Module({

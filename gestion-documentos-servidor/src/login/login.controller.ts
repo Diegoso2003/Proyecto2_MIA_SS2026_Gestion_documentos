@@ -10,7 +10,7 @@ export class LoginController {
   @Public()
   @Post()
   async iniciarSesion(@Body() login: LoginDto){
-    return this.loginService.iniciarSesion(login);
+    return await this.loginService.iniciarSesion(login);
   }
 
 }

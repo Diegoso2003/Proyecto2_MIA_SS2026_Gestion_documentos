@@ -4,12 +4,16 @@ import { LoginController } from './login.controller.js';
 import { EncriptadorModule } from '../seguridad/encriptador/encriptador.module.js';
 import { JwtModule, JwtSignOptions } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { UsuarioModule } from '../usuario/usuario.module.js';
+import { AuthGuard } from './auth/auth.guard.js';
 
 @Module({
   controllers: [LoginController],
-  providers: [LoginService],
+  exports: [AuthGuard, JwtModule],
+  providers: [LoginService, AuthGuard],
   imports: [
     EncriptadorModule,
+    UsuarioModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
