@@ -1,0 +1,32 @@
+<form
+  (submit)="enviar($event)"
+  class="mx-auto flex w-full max-w-2xl items-center gap-1 rounded-full px-2 py-1 bg-(--mat-sys-surface-container-high) focus-within:ring-2 focus-within:ring-(--mat-sys-primary)"
+>
+  <button mat-icon-button type="submit" aria-label="Buscar"><mat-icon>search</mat-icon></button>
+
+  <input
+    type="text"
+    placeholder="Buscar por nombre"
+    class="h-10 min-w-0 flex-1 bg-transparent outline-none"
+    [value]="texto()"
+    (input)="texto.set($any($event.target).value)"
+  />
+
+  @if (texto()) {
+    <button mat-icon-button type="button" (click)="limpiar()" aria-label="Limpiar">
+      <mat-icon>close</mat-icon>
+    </button>
+  }
+
+  <button
+    mat-icon-button
+    type="button"
+    aria-label="Filtros"
+    [matBadge]="filtrosActivos()"
+    [matBadgeHidden]="!filtrosActivos()"
+    matBadgeSize="small"
+    (click)="abrirFiltros.emit()"
+  >
+    <mat-icon>tune</mat-icon>
+  </button>
+</form>

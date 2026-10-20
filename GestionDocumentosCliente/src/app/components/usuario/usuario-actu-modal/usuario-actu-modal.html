@@ -1,0 +1,120 @@
+<div class="flex items-center justify-between pr-2">
+  <h2 mat-dialog-title>Actualizar usuario</h2>
+
+  <button
+    mat-icon-button
+    mat-dialog-close
+    type="button"
+    aria-label="Cerrar"
+    [disabled]="cargandoDatos() || cargandoPassword()"
+  >
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+
+<form [formGroup]="form" (ngSubmit)="actualizar()">
+  <mat-dialog-content class="flex! flex-col gap-1">
+    <mat-form-field appearance="outline">
+      <mat-label>Nombre</mat-label>
+
+      <input matInput formControlName="nombre" autocomplete="name" />
+
+      @if (nombreEstado.invalido()) {
+        <mat-error>
+          {{ nombreEstado.mensaje() }}
+        </mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Correo</mat-label>
+
+      <input matInput type="email" formControlName="correo" autocomplete="email" />
+
+      <mat-icon matPrefix>email</mat-icon>
+
+      @if (correoEstado.invalido()) {
+        <mat-error>
+          {{ correoEstado.mensaje() }}
+        </mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Rol</mat-label>
+
+      <mat-select formControlName="rol">
+        @for (rol of roles; track rol) {
+          <mat-option [value]="rol" class="capitalize">
+            {{ rol }}
+          </mat-option>
+        }
+      </mat-select>
+
+      @if (rolEstado.invalido()) {
+        <mat-error>
+          {{ rolEstado.mensaje() }}
+        </mat-error>
+      }
+    </mat-form-field>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button
+      matButton
+      type="button"
+      mat-dialog-close
+      [disabled]="cargandoDatos() || cargandoPassword()"
+    >
+      Cancelar
+    </button>
+
+    <button matButton="filled" type="submit" [disabled]="cargandoDatos() || cargandoPassword()">
+      {{ cargandoDatos() ? 'Actualizando...' : 'Actualizar' }}
+    </button>
+  </mat-dialog-actions>
+</form>
+
+<div class="mt-4 border-t px-6 pt-4">
+  <h3 class="mb-3 text-lg font-medium">Actualizar solo contraseña</h3>
+
+  <form [formGroup]="passwordForm" (ngSubmit)="actualizarPassword()">
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Nueva contraseña</mat-label>
+
+      <input
+        matInput
+        formControlName="contraseña"
+        [type]="mostrarPassword() ? 'text' : 'password'"
+        autocomplete="new-password"
+      />
+
+      <mat-icon matPrefix> lock </mat-icon>
+
+      <button
+        mat-icon-button
+        matSuffix
+        type="button"
+        (click)="alternarPassword($event)"
+        [attr.aria-label]="mostrarPassword() ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+        [attr.aria-pressed]="mostrarPassword()"
+      >
+        <mat-icon>
+          {{ mostrarPassword() ? 'visibility_off' : 'visibility' }}
+        </mat-icon>
+      </button>
+
+      @if (passwordEstado.invalido()) {
+        <mat-error>
+          {{ passwordEstado.mensaje() }}
+        </mat-error>
+      }
+    </mat-form-field>
+
+    <div class="flex justify-end">
+      <button matButton="outlined" type="submit" [disabled]="cargandoDatos() || cargandoPassword()">
+        {{ cargandoPassword() ? 'Actualizando...' : 'Actualizar contraseña' }}
+      </button>
+    </div>
+  </form>
+</div>

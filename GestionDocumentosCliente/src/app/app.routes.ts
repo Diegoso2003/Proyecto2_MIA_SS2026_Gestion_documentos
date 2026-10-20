@@ -9,7 +9,9 @@ export const routes: Routes = [
       import('./util/components/login-component/login-component').then((m) => m.LoginComponent),
   },
   {
-    path: 'homeeeeeeeeee',
+    path: 'inicio',
+    //canMatch: [InicioGuard]
+    loadChildren: () => import('./routes/side-var.routes').then((m) => m.SIDE_VAR_ROUTES),
   },
   {
     path: '',

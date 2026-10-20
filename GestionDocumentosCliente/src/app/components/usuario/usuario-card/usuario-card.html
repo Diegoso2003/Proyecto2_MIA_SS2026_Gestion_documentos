@@ -1,0 +1,30 @@
+<mat-card appearance="outlined" class="h-full">
+  <mat-card-header>
+    <mat-card-title class="truncate">{{ usuario().nombre }}</mat-card-title>
+    <mat-card-subtitle class="truncate">{{ usuario().correo }}</mat-card-subtitle>
+  </mat-card-header>
+
+  <mat-card-content class="flex flex-wrap gap-2 pt-4">
+    <span
+      class="rounded-full px-3 py-1 text-xs capitalize bg-(--mat-sys-secondary-container) text-(--mat-sys-on-secondary-container)"
+    >
+      {{ usuario().rol }}
+    </span>
+    <span
+      class="rounded-full px-3 py-1 text-xs"
+      [class]="usuario().activo ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'"
+    >
+      {{ usuario().activo ? 'Activo' : 'Inactivo' }}
+    </span>
+  </mat-card-content>
+
+  <mat-card-actions class="justify-between!">
+    <button matButton (click)="actuEstado.emit(usuario())">
+      <mat-icon>{{ usuario().activo ? 'block' : 'check_circle' }}</mat-icon>
+      {{ usuario().activo ? 'Desactivar' : 'Activar' }}
+    </button>
+    <button matButton="tonal" (click)="editar.emit(usuario())">
+      <mat-icon>edit</mat-icon> Actualizar
+    </button>
+  </mat-card-actions>
+</mat-card>
