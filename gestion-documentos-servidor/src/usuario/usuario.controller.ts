@@ -1,34 +1,58 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Put,
+  Query,
+} from '@nestjs/common';
 import { UsuarioService } from './usuario.service.js';
 import { CreateUsuarioDto } from './dto/create-usuario.dto.js';
 import { UpdateUsuarioDto } from './dto/update-usuario.dto.js';
+import { Roles } from '../decorators/roles/roles.decorator.js';
+import { Rol } from './Rol.js';
+import { UpdateUsuarioEstadoDTO } from './dto/update-usuario-estado.dto.js';
+import { UpdateUsuarioPassword } from './dto/update-usuario-password.dto.js';
+import { UsuarioFiltroDto } from './dto/usuario-filtro.dto.js';
 
+@Roles(Rol.ADMIN)
 @Controller('usuario')
 export class UsuarioController {
   constructor(private readonly usuarioService: UsuarioService) {}
 
   @Post()
-  create(@Body() createUsuarioDto: CreateUsuarioDto) {
-    return this.usuarioService.create(createUsuarioDto);
+  async create(@Body() createUsuarioDto: CreateUsuarioDto) {
+    await this.usuarioService.create(createUsuarioDto);
   }
 
   @Get()
-  findAll() {
-    return this.usuarioService.findAll();
+  findAll(@Query() filtros: UsuarioFiltroDto) {
+    return this.usuarioService.findAll(filtros);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usuarioService.findOne(+id);
+  @Patch('estado/:id')
+  async updateEstado(
+    @Param('id') id: string,
+    @Body() estadoUsuario: UpdateUsuarioEstadoDTO,
+  ) {
+    await this.usuarioService.updateEstado(id, estadoUsuario);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUsuarioDto: UpdateUsuarioDto) {
-    return this.usuarioService.update(+id, updateUsuarioDto);
+  @Patch('actu-password/:id')
+  async updatePassword(
+    @Param('id') id: string,
+    @Body() nuevaContra: UpdateUsuarioPassword,
+  ) {
+    await this.usuarioService.updatePassword(id, nuevaContra);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usuarioService.remove(+id);
+  @Put(':id')
+  async update(
+    @Param('id') id: string,
+    @Body() updateUsuarioDto: UpdateUsuarioDto,
+  ) {
+    await this.usuarioService.update(id, updateUsuarioDto);
   }
 }

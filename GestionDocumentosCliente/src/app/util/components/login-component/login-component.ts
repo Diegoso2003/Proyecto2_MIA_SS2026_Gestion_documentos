@@ -12,6 +12,7 @@ import { ErrorService } from '../../services/error-service';
 import { LoginDTO } from '../../models/login-dto';
 import { JwtToken } from '../../models/jwt-token';
 import { HttpErrorResponse } from '@angular/common/http';
+import { JwtService } from '../../services/jwt-service';
 
 @Component({
   selector: 'app-login-component',
@@ -42,6 +43,7 @@ export class LoginComponent {
   private _router = inject(Router);
   private _authService = inject(AuthService);
   private _errorService = inject(ErrorService);
+  private _jwtService = inject(JwtService);
   mostrarPassword = signal<boolean>(false);
 
   enviar(): void {
@@ -53,7 +55,8 @@ export class LoginComponent {
     const login = this.loginForm.value as LoginDTO;
     this._authService.login(login).subscribe({
       next: (token: JwtToken) => {
-        console.log(token.token);
+        this._jwtService.guardarToken(token);
+        this._router.navigate(['inicio/mis-documentos']);
       },
       error: (error: HttpErrorResponse) => {
         const mensaje = error.error.message ?? 'intente más tarde';

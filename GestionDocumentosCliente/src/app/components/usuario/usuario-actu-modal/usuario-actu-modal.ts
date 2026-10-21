@@ -82,8 +82,8 @@ export class UsuarioActuModal {
       return;
     }
     this.cargandoDatos.set(true);
-    const datos: UsuarioActuRequest = { ...this.form.getRawValue(), _id: this.usuario._id };
-    this._usuarioService.actualizarUsuario(datos).subscribe({
+    const datos: UsuarioActuRequest = { ...this.form.getRawValue() };
+    this._usuarioService.actualizarUsuario(this.usuario._id, datos).subscribe({
       next: () => {
         this.ref.close(true);
       },
@@ -102,8 +102,8 @@ export class UsuarioActuModal {
       return;
     }
     this.cargandoPassword.set(true);
-    const actu: UsuarioActuPassword = { ...this.passwordForm.getRawValue(), _id: this.usuario._id };
-    this._usuarioService.actuPasswordUsuario(actu).subscribe({
+    const actu: UsuarioActuPassword = { ...this.passwordForm.getRawValue() };
+    this._usuarioService.actuPasswordUsuario(this.usuario._id, actu).subscribe({
       next: () => {
         this.ref.close(true);
       },

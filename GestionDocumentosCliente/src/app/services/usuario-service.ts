@@ -22,16 +22,16 @@ export class UsuarioService {
     return this._http.post<void>(`${this.url}`, nuevo);
   }
 
-  actualizarUsuario(actu: UsuarioActuRequest): Observable<void> {
-    return this._http.put<void>(`${this.url}`, actu);
+  actualizarUsuario(id: string, actu: UsuarioActuRequest): Observable<void> {
+    return this._http.put<void>(`${this.url}/${id}`, actu);
   }
 
-  actuEstadoUsuario(actu: UsuarioActuEstado): Observable<void> {
-    return this._http.patch<void>(`${this.url}`, actu);
+  actuEstadoUsuario(id: string, actu: UsuarioActuEstado): Observable<void> {
+    return this._http.patch<void>(`${this.url}/estado/${id}`, actu);
   }
 
-  actuPasswordUsuario(actu: UsuarioActuPassword): Observable<void> {
-    return this._http.patch<void>(`${this.url}/password`, actu);
+  actuPasswordUsuario(id: string, actu: UsuarioActuPassword): Observable<void> {
+    return this._http.patch<void>(`${this.url}/actu-password/${id}`, actu);
   }
 
   obtenerUsuarios(filtro: UsuarioFiltro): Observable<UsuarioResponse[]> {
@@ -39,7 +39,7 @@ export class UsuarioService {
     return this._http.get<UsuarioResponse[]>(`${this.url}`, { params });
   }
 
-  obtenerParams(filtro: UsuarioFiltro): HttpParams {
+  private obtenerParams(filtro: UsuarioFiltro): HttpParams {
     let params = new HttpParams();
     Object.keys(filtro).forEach((llave) => {
       const valor = filtro[llave as keyof UsuarioFiltro];

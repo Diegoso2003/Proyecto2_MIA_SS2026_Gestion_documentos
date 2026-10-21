@@ -86,7 +86,6 @@ export class UsuariosVista implements OnInit {
       .afterClosed()
       .subscribe((resultado) => {
         if (resultado) {
-          console.log('actualizar datos');
           this.traerUsuarios();
         }
       });
@@ -95,9 +94,8 @@ export class UsuariosVista implements OnInit {
   cambiarEstado(usuario: UsuarioResponse): void {
     const actu: UsuarioActuEstado = {
       estado: !usuario.activo,
-      _id: usuario._id,
     };
-    this._usuarioService.actuEstadoUsuario(actu).subscribe({
+    this._usuarioService.actuEstadoUsuario(usuario._id, actu).subscribe({
       next: () => {
         this.traerUsuarios();
       },
@@ -106,5 +104,13 @@ export class UsuariosVista implements OnInit {
         this._errorService.mostrarMensaje(mensaje);
       },
     });
+  }
+  buscarNombre(nombre: string) {
+    this.busqueda.set(nombre);
+    this.filtros.update((filtros) => ({
+      ...filtros,
+      nombre,
+    }));
+    this.traerUsuarios();
   }
 }

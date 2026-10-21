@@ -14,35 +14,49 @@
             <span matListItemTitle>{{ s.nombre }}</span>
           </a>
         }
+        @if (usuarioAdmin()) {
+          <a
+            mat-list-item
+            [routerLink]="usuarios.ruta"
+            routerLinkActive
+            #rla="routerLinkActive"
+            [activated]="rla.isActive"
+          >
+            <mat-icon matListItemIcon>{{ usuarios.icono }}</mat-icon>
+            <span matListItemTitle>{{ usuarios.nombre }}</span>
+          </a>
+        }
       </mat-nav-list>
 
       <mat-divider />
 
-      <mat-tree #tree [dataSource]="reportes" [childrenAccessor]="childrenAccessor" class="arbol">
-        <mat-tree-node
-          *matTreeNodeDef="let nodo"
-          matTreeNodePadding
-          [matTreeNodePaddingIndent]="16"
-        >
-          <button mat-icon-button disabled aria-hidden="true"></button>
-          <a class="enlace-nodo" [routerLink]="nodo.ruta" routerLinkActive="activo">
-            {{ nodo.nombre }}
-          </a>
-        </mat-tree-node>
+      @if (usuarioAdmin()) {
+        <mat-tree #tree [dataSource]="reportes" [childrenAccessor]="childrenAccessor" class="arbol">
+          <mat-tree-node
+            *matTreeNodeDef="let nodo"
+            matTreeNodePadding
+            [matTreeNodePaddingIndent]="16"
+          >
+            <button mat-icon-button disabled aria-hidden="true"></button>
+            <a class="enlace-nodo" [routerLink]="nodo.ruta" routerLinkActive="activo">
+              {{ nodo.nombre }}
+            </a>
+          </mat-tree-node>
 
-        <mat-tree-node
-          *matTreeNodeDef="let nodo; when: tieneHijos"
-          matTreeNodePadding
-          [matTreeNodePaddingIndent]="16"
-          [cdkTreeNodeTypeaheadLabel]="nodo.nombre"
-        >
-          <button mat-icon-button matTreeNodeToggle [attr.aria-label]="'Alternar ' + nodo.nombre">
-            <mat-icon>{{ tree.isExpanded(nodo) ? 'expand_more' : 'chevron_right' }}</mat-icon>
-          </button>
-          <mat-icon class="icono-nodo">{{ nodo.icono }}</mat-icon>
-          <span class="nombre-nodo">{{ nodo.nombre }}</span>
-        </mat-tree-node>
-      </mat-tree>
+          <mat-tree-node
+            *matTreeNodeDef="let nodo; when: tieneHijos"
+            matTreeNodePadding
+            [matTreeNodePaddingIndent]="16"
+            [cdkTreeNodeTypeaheadLabel]="nodo.nombre"
+          >
+            <button mat-icon-button matTreeNodeToggle [attr.aria-label]="'Alternar ' + nodo.nombre">
+              <mat-icon>{{ tree.isExpanded(nodo) ? 'expand_more' : 'chevron_right' }}</mat-icon>
+            </button>
+            <mat-icon class="icono-nodo">{{ nodo.icono }}</mat-icon>
+            <span class="nombre-nodo">{{ nodo.nombre }}</span>
+          </mat-tree-node>
+        </mat-tree>
+      }
 
       <span class="relleno"></span>
 

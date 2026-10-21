@@ -33,19 +33,19 @@ function crearUsuario(nombre, correo, rol, contraseña_hash) {
 }
 const ana = crearUsuario(
   "Ana Morales",
-  "ana.morales@empresa.com",
+  "ana_morales@gmail.com",
   "administrador",
   "$argon2id$v=19$m=65536,t=3,p=4$i3g2sFThZUopb1I50fa74A$ehE0XaZdcHj2vpenaH8iMdXHol6oxFxKtutGvVog5eA",
 );
 const luis = crearUsuario(
   "Luis Pérez",
-  "luis.perez@empresa.com",
+  "luis_perez@gmail.com",
   "usuario",
   "$argon2id$v=19$m=65536,t=3,p=4$alO6eg7uZN3ZnjILyVLV4w$YM1Cw2fwOkkILw2x79zSQe3dNsMiQCKQ9JcwpSTSHIg",
 );
 const maria = crearUsuario(
   "María López",
-  "maria.lopez@empresa.com",
+  "maria_lopez@gmail.com",
   "usuario",
   "$argon2id$v=19$m=65536,t=3,p=4$dLGS0oSRBTtjqQ0oRT36OQ$hjl47NTcHQnpVej0+URqAYuZf+hnaJGR8VQogQXj9zc",
 );

@@ -16,23 +16,33 @@ export class LoginService {
   ) {}
 
   async iniciarSesion(login: LoginDto) {
-    const usuario: UsuarioDocument | null = await this.usuarioModel.findOne({ correo: login.correo }).select('+contraseña_hash');
-    if(!usuario){
-        throw new BadRequestException('correo o contraseña incorrectos')
+    const usuario: UsuarioDocument | null = await this.usuarioModel
+      .findOne({ correo: login.correo })
+      .select('+contraseña_hash');
+    if (!usuario) {
+      throw new BadRequestException('correo o contraseña incorrectos');
     }
-    const valido: boolean = await this.encriptadorService.verificarContraseña(login.contraseña, usuario.contraseña_hash);
-    if(!valido){
-        throw new BadRequestException('correo o contraseña incorrectos');
+    const valido: boolean = await this.encriptadorService.verificarContraseña(
+      login.contraseña,
+      usuario.contraseña_hash,
+    );
+    if (!valido) {
+      throw new BadRequestException('correo o contraseña incorrectos');
+    }
+    if (!usuario.activo) {
+      throw new BadRequestException(
+        'usuario suspendido consulte con un administrador para solucionar el problema',
+      );
     }
     return this.login(usuario);
   }
 
-  login(usuario: UsuarioDocument): { token: string }{
+  login(usuario: UsuarioDocument): { token: string } {
     const payload = {
       rol: usuario.rol,
       id: usuario._id,
     };
     const token: string = this.jwtService.sign(payload);
-    return {token: token};
+    return { token: token };
   }
 }

@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { AdminGuard } from '../guards/admin-guard';
 
 export const SIDE_VAR_ROUTES: Routes = [
   {
@@ -16,7 +17,7 @@ export const SIDE_VAR_ROUTES: Routes = [
       {
         path: 'usuarios',
         title: 'Usuarios',
-        // canMatch: [guard]
+        canMatch: [AdminGuard],
         loadComponent: () =>
           import('../components/usuario/usuarios-vista/usuarios-vista').then(
             (m) => m.UsuariosVista,
