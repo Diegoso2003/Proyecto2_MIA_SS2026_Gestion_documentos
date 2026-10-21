@@ -27,7 +27,7 @@ export class UsuarioFiltroDialog {
   private fb = inject(NonNullableFormBuilder);
   private ref = inject<MatDialogRef<UsuarioFiltroDialog, UsuarioFiltro>>(MatDialogRef);
   private actuales = inject<UsuarioFiltro>(MAT_DIALOG_DATA);
-  roles = Object.keys(Rol);
+  roles = Object.values(Rol);
 
   form = this.fb.group({
     rol: this.fb.control<Rol | null>(this.actuales.rol),

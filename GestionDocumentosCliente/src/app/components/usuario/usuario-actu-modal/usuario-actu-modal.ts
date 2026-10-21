@@ -8,10 +8,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { Rol, UsuarioResponse } from '../../../models/usuario/usuario-response';
 import { ErrorService } from '../../../util/services/error-service';
-import { UsuarioCreateRequest } from '../../../models/usuario/usuario-create-request';
 import { UsuarioService } from '../../../services/usuario-service';
 import { CampoEstado, estadoCampo } from '../../../util/validador-form';
-import { minLength } from '@angular/forms/signals';
 import {
   UsuarioActuPassword,
   UsuarioActuRequest,
@@ -38,7 +36,7 @@ export class UsuarioActuModal {
   private ref = inject<MatDialogRef<UsuarioActuModal, boolean>>(MatDialogRef);
   private _errorService = inject(ErrorService);
   usuario = inject<UsuarioResponse>(MAT_DIALOG_DATA);
-  roles = Object.keys(Rol);
+  roles = Object.values(Rol);
   mostrarPassword = signal(false);
   cargandoDatos = signal(false);
   cargandoPassword = signal(false);

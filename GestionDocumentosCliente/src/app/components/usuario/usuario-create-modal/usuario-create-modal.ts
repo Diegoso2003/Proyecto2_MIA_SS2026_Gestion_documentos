@@ -7,7 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { UsuarioService } from '../../../services/usuario-service';
-import { Rol } from '../../../models/usuario/usuario-response';
+import { Rol, ROLES } from '../../../models/usuario/usuario-response';
 import { CampoEstado, estadoCampo } from '../../../util/validador-form';
 import { ErrorService } from '../../../util/services/error-service';
 import { UsuarioCreateRequest } from '../../../models/usuario/usuario-create-request';
@@ -32,7 +32,7 @@ export class UsuarioCreateModal {
   private _usuarioService = inject(UsuarioService);
   private ref = inject<MatDialogRef<UsuarioCreateModal, boolean>>(MatDialogRef);
   private _errorService = inject(ErrorService);
-  roles = Object.keys(Rol);
+  roles = ROLES;
   mostrarPassword = signal(false);
   cargando = signal(false);
   form = this._fb.group({
