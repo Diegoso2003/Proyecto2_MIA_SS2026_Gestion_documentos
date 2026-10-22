@@ -21,6 +21,12 @@ export class Carpeta {
 
   @Prop({
     type: Types.ObjectId,
+    ref: Usuario.name,
+    required: true,
+  })
+  modificado_por: Types.ObjectId;
+  @Prop({
+    type: Types.ObjectId,
     ref: Carpeta.name,
     default: null,
   })

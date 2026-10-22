@@ -10,7 +10,10 @@ import { JwtService } from '@nestjs/jwt';
 import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
 import { InjectModel } from '@nestjs/mongoose';
-import { Usuario, UsuarioDocument } from '../../usuario/schema/usuario.schema.js';
+import {
+  Usuario,
+  UsuarioDocument,
+} from '../../usuario/schema/usuario.schema.js';
 import { Model } from 'mongoose';
 import { ROLES_KEY } from '../../decorators/roles/roles.decorator.js';
 import { Rol } from '../../usuario/Rol.js';
@@ -46,7 +49,10 @@ export class AuthGuard implements CanActivate {
     }
     const usuario = await this.usuarioModel.findById(payload.id);
     if (!usuario) throw new UnauthorizedException('Usuario no encontrado');
-    if (!usuario.activo) throw new ForbiddenException('Usuario suspendido, consultar con admin para reactivación');
+    if (!usuario.activo)
+      throw new ForbiddenException(
+        'Usuario suspendido, consultar con admin para reactivación',
+      );
 
     const requiredRoles = this.reflector.getAllAndOverride<Rol[]>(ROLES_KEY, [
       context.getHandler(),

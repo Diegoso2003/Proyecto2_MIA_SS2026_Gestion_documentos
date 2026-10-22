@@ -1,7 +1,18 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { CarpetaService } from './carpeta.service.js';
 import { CreateCarpetaDto } from './dto/create-carpeta.dto.js';
 import { UpdateCarpetaDto } from './dto/update-carpeta.dto.js';
+import { GetUsuario } from '../decorators/get-usuario/get-usuario.decorator.js';
+import { RutaCarpetaPadre } from './dto/ruta-carpeta-padre.dto.js';
+import type { UsuarioDocument } from '../usuario/schema/usuario.schema.js';
 
 @Controller('carpeta')
 export class CarpetaController {
@@ -12,9 +23,9 @@ export class CarpetaController {
     return this.carpetaService.create(createCarpetaDto);
   }
 
-  @Get()
-  findAll() {
-    return this.carpetaService.findAll();
+  @Get('/carpetas-usuario')
+  findAll(@GetUsuario() usuario: UsuarioDocument, padre: RutaCarpetaPadre) {
+    return this.carpetaService.findAll(usuario, padre);
   }
 
   @Get(':id')

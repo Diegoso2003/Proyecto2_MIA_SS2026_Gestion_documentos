@@ -39,6 +39,13 @@ export class Documento {
 
   @Prop({
     type: Types.ObjectId,
+    ref: Usuario.name,
+    required: true,
+  })
+  modificado_por: Types.ObjectId;
+
+  @Prop({
+    type: Types.ObjectId,
     ref: Carpeta.name,
     default: null,
   })
@@ -59,6 +66,9 @@ export class Documento {
     default: null,
   })
   fecha_eliminacion: Date | null;
+
+  @Prop({ type: [Types.ObjectId], ref: Carpeta.name, default: [] })
+  ancestros: Types.ObjectId[];
 }
 
 export const DocumentoSchema = SchemaFactory.createForClass(Documento);
