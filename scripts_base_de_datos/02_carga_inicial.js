@@ -759,7 +759,7 @@ function comentar(usuario, nombreArchivo, texto, cuando) {
   comentarios.push({
     _id: new ObjectId(),
     documento_id: documento._id,
-    usuario: { _id: usuario._id, nombre: usuario.nombre },
+    usuario_id: usuario._id,
     texto,
     createdAt: cuando,
     updatedAt: cuando,

@@ -10,9 +10,10 @@ import { APP_GUARD } from '@nestjs/core';
 import { AuthGuard } from './login/auth/auth.guard.js';
 import { MongooseModule } from '@nestjs/mongoose';
 import { CarpetaModule } from './carpeta/carpeta.module.js';
-import { ArchivoModule } from './archivo/archivo.module.js';
 import { CompartidoModule } from './compartido/compartido.module.js';
 import { DestacadoModule } from './destacado/destacado.module.js';
+import { ComentarioModule } from './comentario/comentario.module.js';
+import { DocumentoModule } from './documento/documento.module.js';
 
 @Module({
   imports: [
@@ -28,9 +29,10 @@ import { DestacadoModule } from './destacado/destacado.module.js';
     LoginModule,
     UsuarioModule,
     CarpetaModule,
-    ArchivoModule,
     CompartidoModule,
     DestacadoModule,
+    ComentarioModule,
+    DocumentoModule,
   ],
   controllers: [AppController],
   providers: [
