@@ -1,4 +1,5 @@
 <!--toc:start-->
+
 - [Proyecto2_MIA_SS2026_Gestion_documentos](#proyecto2_mia_ss2026_gestion_documentos)
 - [Activar autenticación en MongoDB](#activar-autenticación-en-mongodb)
   - [Requisitos previos](#requisitos-previos)
@@ -10,6 +11,7 @@
 
 - [Carga de la base de datos sin autenticación](#carga-de-la-base-de-datos-sin-autenticación)
 - [Carga de la base de datos con autenticación](#carga-de-la-base-de-datos-con-autenticación) - [Cadena de conexión para la aplicación](#cadena-de-conexión-para-la-aplicación)
+
 <!--toc:end-->
 
 # Proyecto2_MIA_SS2026_Gestion_documentos
@@ -70,7 +72,7 @@ Busca la sección `security` (o añádela si no existe) y asegúrate de que qued
 
 ```yaml
 security:
-    authorization: enabled
+  authorization: enabled
 ```
 
 > **Importante:** Respeta la **indentación** (4 espacios). YAML es estricto con esto. No uses tabulaciones.
@@ -92,8 +94,9 @@ mongosh -u Rafael -p --authenticationDatabase admin
 ```
 
 Te pedirá la contraseña (`GestionArchivos2026`) y, si todo está correcto, entrarás a la shell ya autenticado.
+
 > El flag `--authenticationDatabase admin` indica que el usuario fue creado en la base de datos `admin`. Es fundamental incluirlo, o la autenticación fallará.
->
+
 ### Cadena de conexión para la aplicación
 
 Para conectarte a MongoDB desde NestJS, usa esta URI:
@@ -115,20 +118,20 @@ cd scripts_base_de_datos
 Luego, se ejecuta el script encargado de crear la base de datos y sus esquemas:
 
 ```bash
-mongosh "mongodb://localhost:27017" --file 01_crear_bd.js
+mongosh  --file 01_crear_bd.js
 ```
 
 Después, se ejecuta el script encargado de realizar la carga inicial de los datos:
 
 ```bash
-mongosh "mongodb://localhost:27017" --file 02_carga_inicial.js
+mongosh  --file 02_carga_inicial.js
 ```
 
 También es posible ejecutar ambos scripts consecutivamente:
 
 ```bash
-mongosh "mongodb://localhost:27017" --file 01_crear_bd.js
-mongosh "mongodb://localhost:27017" --file 02_carga_inicial.js
+mongosh --file 01_crear_bd.js
+mongosh --file 02_carga_inicial.js
 ```
 
 Esta forma de ejecución corresponde al escenario en el que MongoDB no tiene habilitada la autenticación, por lo que no es necesario proporcionar usuario ni contraseña.
@@ -140,27 +143,27 @@ Una vez activada la autenticación en MongoDB, los scripts deben ejecutarse prop
 Desde la carpeta `scripts_base_de_datos`, se ejecuta primero el script encargado de crear la base de datos y sus esquemas:
 
 ```bash
-mongosh "mongodb://localhost:27017" --username <usuario> --password <contraseña> --authenticationDatabase admin --file 01_crear_bd.js
+mongosh --username <usuario> --password <contraseña> --authenticationDatabase admin --file 01_crear_bd.js
 ```
 
 Posteriormente, se ejecuta el script encargado de realizar la carga inicial de los datos:
 
 ```bash
-mongosh "mongodb://localhost:27017" --username <usuario> --password <contraseña> --authenticationDatabase admin --file 02_carga_inicial.js
+mongosh --username <usuario> --password <contraseña> --authenticationDatabase admin --file 02_carga_inicial.js
 ```
 
 Por ejemplo, si el usuario administrador creado anteriormente se llama `admin`:
 
 ```bash
-mongosh "mongodb://localhost:27017" --username admin --password <contraseña> --authenticationDatabase admin --file 01_crear_bd.js
-mongosh "mongodb://localhost:27017" --username admin --password <contraseña> --authenticationDatabase admin --file 02_carga_inicial.js
+mongosh --username admin --password <contraseña> --authenticationDatabase admin --file 01_crear_bd.js
+mongosh --username admin --password <contraseña> --authenticationDatabase admin --file 02_carga_inicial.js
 ```
 
 Si la contraseña contiene caracteres especiales, también se puede omitir el
 parámetro `--password` para que `mongosh` solicite la contraseña de forma interactiva:
 
 ```bash
-mongosh "mongodb://localhost:27017" --username admin --authenticationDatabase admin --file 01_crear_bd.js
+mongosh --username admin --authenticationDatabase admin --file 01_crear_bd.js
 ```
 
 Después de ejecutar el comando, `mongosh` solicitará la contraseña del usuario.
@@ -168,7 +171,7 @@ Después de ejecutar el comando, `mongosh` solicitará la contraseña del usuari
 Finalmente, se repite el procedimiento para el segundo script:
 
 ```bash
-mongosh "mongodb://localhost:27017" --username admin --authenticationDatabase admin --file 02_carga_inicial.js
+mongosh --username admin --authenticationDatabase admin --file 02_carga_inicial.js
 ```
 
 De esta manera, los mismos scripts pueden utilizarse tanto antes como después de activar la autenticación de MongoDB. La diferencia consiste únicamente en proporcionar las credenciales correspondientes cuando la autenticación se encuentra habilitada.

@@ -13,6 +13,7 @@ import { ErrorService } from '../../../util/services/error-service';
 import { UsuarioActuEstado } from '../../../models/usuario/usuario-actu-request';
 import { HttpErrorResponse } from '@angular/common/http';
 import { UsuarioFiltroDialog } from '../usuario-filtro-dialog/usuario-filtro-dialog';
+import { JwtService } from '../../../util/services/jwt-service';
 
 @Component({
   selector: 'app-usuarios-vista',
@@ -24,6 +25,8 @@ export class UsuariosVista implements OnInit {
   private _usuarioService = inject(UsuarioService);
   private _errorService = inject(ErrorService);
   private dialog = inject(MatDialog);
+  private _jwtService = inject(JwtService);
+  usuarioId = signal<string>('');
   usuarios = signal<UsuarioResponse[]>([]);
   filtrosActivos = computed(() => Object.values(this.filtros()).filter((v) => v !== null).length);
 
@@ -38,6 +41,7 @@ export class UsuariosVista implements OnInit {
     this._usuarioService.obtenerUsuarios(this.filtros()).subscribe({
       next: (usuarios: UsuarioResponse[]) => {
         this.usuarios.set(usuarios);
+        this.usuarioId.set(this._jwtService.getIdUsuario());
       },
       error: (error: HttpErrorResponse) => {
         const mensaje = error.error.message ?? 'error al traer a los usuarios intente más tarde';

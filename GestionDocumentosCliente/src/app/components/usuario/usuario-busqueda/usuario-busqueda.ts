@@ -22,6 +22,5 @@ export class UsuarioBusqueda {
 
   limpiar() {
     this.texto.set('');
-    this.buscar.emit('');
   }
 }

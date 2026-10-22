@@ -36,7 +36,7 @@ export class UsuarioService {
     if (filtros.rol) {
       usuarioFiltro.rol = filtros.rol;
     }
-    if (filtros.estado) {
+    if (filtros.estado !== undefined) {
       usuarioFiltro.activo = filtros.estado;
     }
     return this.usuarioModel.find(usuarioFiltro).exec();

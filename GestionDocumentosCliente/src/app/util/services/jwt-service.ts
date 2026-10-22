@@ -20,6 +20,15 @@ export class JwtService {
     return Rol.USUARIO;
   }
 
+  getIdUsuario(): string {
+    const token = localStorage.getItem('token');
+    if (token) {
+      const decodePayload = jwtDecode<JwtPayload>(token);
+      return decodePayload.id;
+    }
+    return '';
+  }
+
   getToken(): string {
     return localStorage.getItem('token') ?? '';
   }

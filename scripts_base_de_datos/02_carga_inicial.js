@@ -6,19 +6,16 @@ if (bd.usuario.countDocuments() > 0) {
   );
 }
 
-const fechaDe = (texto) => new Date(texto.replace(" ", "T") + ":00Z");
 const mismoId = (a, b) => a.toString() === b.toString();
-const aBytes = (texto) => unescape(encodeURIComponent(texto));
 
 const historial = [];
-function registrar(usuario, accion, descripcion, cuando, recurso) {
-  const entrada = {
+function registrar(usuario, accion, descripcion, cuando) {
+  historial.push({
     usuario_id: usuario._id,
     accion,
     descripcion,
     createdAt: cuando,
-  };
-  historial.push(entrada);
+  });
 }
 
 function crearUsuario(nombre, correo, rol, contraseña_hash) {
@@ -51,6 +48,7 @@ const maria = crearUsuario(
 );
 const usuarios = [ana, luis, maria];
 const dueñoDe = (id) => usuarios.find((u) => mismoId(u._id, id));
+
 const carpetas = [];
 const carpetaPorId = (id) => carpetas.find((c) => mismoId(c._id, id));
 
@@ -61,10 +59,9 @@ function crearCarpeta(nombre, dueño, padre, creada) {
     propietario_id: dueño._id,
     padre_id: padre ? padre._id : null,
     ancestros: padre ? [...padre.ancestros, padre._id] : [],
-    eliminado: false,
     fecha_eliminacion: null,
-    createdAt: fechaDe(creada),
-    updatedAt: fechaDe(creada),
+    createdAt: creada,
+    updatedAt: creada,
   };
   carpetas.push(carpeta);
   registrar(
@@ -73,8 +70,7 @@ function crearCarpeta(nombre, dueño, padre, creada) {
     padre
       ? `Creó la carpeta «${nombre}» dentro de «${padre.nombre}»`
       : `Creó la carpeta «${nombre}» en la raíz`,
-    carpeta.createdAt,
-    carpeta,
+    creada,
   );
   return carpeta;
 }
@@ -83,35 +79,81 @@ const administracion = crearCarpeta(
   "Administración",
   ana,
   null,
-  "2026-04-17 09:00",
+  ISODate("2026-04-17T09:00:00Z"),
 );
 const contratos = crearCarpeta(
   "Contratos",
   ana,
   administracion,
-  "2026-04-17 09:10",
+  ISODate("2026-04-17T09:10:00Z"),
 );
 const informes = crearCarpeta(
   "Informes",
   ana,
   administracion,
-  "2026-04-17 09:20",
+  ISODate("2026-04-17T09:20:00Z"),
 );
-const politicas = crearCarpeta("Políticas", ana, null, "2026-04-17 09:30");
-const proyectos = crearCarpeta("Proyectos", luis, null, "2026-04-17 10:00");
-const alpha = crearCarpeta("Alpha", luis, proyectos, "2026-04-17 10:10");
-const beta = crearCarpeta("Beta", luis, proyectos, "2026-04-17 10:20");
+const politicas = crearCarpeta(
+  "Políticas",
+  ana,
+  null,
+  ISODate("2026-04-17T09:30:00Z"),
+);
+const proyectos = crearCarpeta(
+  "Proyectos",
+  luis,
+  null,
+  ISODate("2026-04-17T10:00:00Z"),
+);
+const alpha = crearCarpeta(
+  "Alpha",
+  luis,
+  proyectos,
+  ISODate("2026-04-17T10:10:00Z"),
+);
+const beta = crearCarpeta(
+  "Beta",
+  luis,
+  proyectos,
+  ISODate("2026-04-17T10:20:00Z"),
+);
 const documentacion = crearCarpeta(
   "Documentación",
   luis,
   alpha,
-  "2026-04-17 10:30",
+  ISODate("2026-04-17T10:30:00Z"),
 );
-const notas = crearCarpeta("Notas", luis, null, "2026-04-17 10:40");
-const finanzas = crearCarpeta("Finanzas", maria, null, "2026-04-17 11:00");
-const f2025 = crearCarpeta("2025", maria, finanzas, "2026-04-17 11:10");
-const f2026 = crearCarpeta("2026", maria, finanzas, "2026-04-17 11:20");
-const personal = crearCarpeta("Personal", maria, null, "2026-04-17 11:30");
+const notas = crearCarpeta(
+  "Notas",
+  luis,
+  null,
+  ISODate("2026-04-17T10:40:00Z"),
+);
+const finanzas = crearCarpeta(
+  "Finanzas",
+  maria,
+  null,
+  ISODate("2026-04-17T11:00:00Z"),
+);
+const f2025 = crearCarpeta(
+  "2025",
+  maria,
+  finanzas,
+  ISODate("2026-04-17T11:10:00Z"),
+);
+const f2026 = crearCarpeta(
+  "2026",
+  maria,
+  finanzas,
+  ISODate("2026-04-17T11:20:00Z"),
+);
+const personal = crearCarpeta(
+  "Personal",
+  maria,
+  null,
+  ISODate("2026-04-17T11:30:00Z"),
+);
+
 const documentos = [];
 
 const archivo = (nombre) => {
@@ -130,28 +172,24 @@ function contenidoDe(nombre, dueño, extension) {
 function crearArchivo(nombre, dueño, carpeta, creado) {
   const extension = nombre.split(".").pop();
   const tipo_mime = extension === "md" ? "text/markdown" : "text/plain";
-  const cuando = fechaDe(creado);
-  const contenido = contenidoDe(nombre, dueño, extension);
 
   const documento = {
     _id: new ObjectId(),
     nombre,
     propietario_id: dueño._id,
     carpeta_id: carpeta ? carpeta._id : null,
-    detalles: { extension, tipo_mime, tamaño: aBytes(contenido).length },
-    contenido,
-    eliminado: false,
+    detalles: { extension, tipo_mime },
+    contenido: contenidoDe(nombre, dueño, extension),
     fecha_eliminacion: null,
-    createdAt: cuando,
-    updatedAt: cuando,
+    createdAt: creado,
+    updatedAt: creado,
   };
   documentos.push(documento);
   registrar(
     dueño,
     "subir",
     `Subió el archivo «${nombre}» a ${carpeta ? `la carpeta «${carpeta.nombre}»` : "la raíz"}`,
-    cuando,
-    documento,
+    creado,
   );
 }
 
@@ -159,144 +197,313 @@ crearArchivo(
   "contrato_marco_proveedores.txt",
   ana,
   contratos,
-  "2026-04-20 09:15",
+  ISODate("2026-04-20T09:15:00Z"),
 );
-crearArchivo("calendario_actividades_2026.txt", ana, null, "2026-04-23 12:00");
-crearArchivo("informe_trimestral_q1.md", ana, informes, "2026-05-06 16:20");
-crearArchivo("acuerdo_confidencialidad.md", ana, contratos, "2026-05-11 14:30");
+crearArchivo(
+  "calendario_actividades_2026.txt",
+  ana,
+  null,
+  ISODate("2026-04-23T12:00:00Z"),
+);
+crearArchivo(
+  "informe_trimestral_q1.md",
+  ana,
+  informes,
+  ISODate("2026-05-06T16:20:00Z"),
+);
+crearArchivo(
+  "acuerdo_confidencialidad.md",
+  ana,
+  contratos,
+  ISODate("2026-05-11T14:30:00Z"),
+);
 crearArchivo(
   "politica_seguridad_informacion.md",
   ana,
   politicas,
-  "2026-05-20 09:45",
+  ISODate("2026-05-20T09:45:00Z"),
 );
 crearArchivo(
   "contrato_arrendamiento_oficina.txt",
   ana,
   contratos,
-  "2026-06-02 10:05",
+  ISODate("2026-06-02T10:05:00Z"),
 );
 crearArchivo(
   "manual_induccion_empleados.md",
   ana,
   administracion,
-  "2026-06-15 08:50",
+  ISODate("2026-06-15T08:50:00Z"),
 );
-crearArchivo("politica_teletrabajo.txt", ana, politicas, "2026-06-24 13:25");
+crearArchivo(
+  "politica_teletrabajo.txt",
+  ana,
+  politicas,
+  ISODate("2026-06-24T13:25:00Z"),
+);
 crearArchivo(
   "acta_reunion_directiva_junio.txt",
   ana,
   administracion,
-  "2026-06-30 17:00",
+  ISODate("2026-06-30T17:00:00Z"),
 );
-crearArchivo("informe_trimestral_q2.md", ana, informes, "2026-07-08 11:40");
-crearArchivo("directorio_proveedores.md", ana, null, "2026-08-05 09:20");
+crearArchivo(
+  "informe_trimestral_q2.md",
+  ana,
+  informes,
+  ISODate("2026-07-08T11:40:00Z"),
+);
+crearArchivo(
+  "directorio_proveedores.md",
+  ana,
+  null,
+  ISODate("2026-08-05T09:20:00Z"),
+);
 crearArchivo(
   "informe_auditoria_interna.txt",
   ana,
   informes,
-  "2026-08-19 15:10",
+  ISODate("2026-08-19T15:10:00Z"),
 );
-crearArchivo("politica_gastos_viaje.txt", ana, politicas, "2026-09-03 10:30");
+crearArchivo(
+  "politica_gastos_viaje.txt",
+  ana,
+  politicas,
+  ISODate("2026-09-03T10:30:00Z"),
+);
 crearArchivo(
   "acta_reunion_directiva_septiembre.txt",
   ana,
   administracion,
-  "2026-09-22 16:15",
+  ISODate("2026-09-22T16:15:00Z"),
 );
 crearArchivo(
   "resumen_gestion_semestral.md",
   ana,
   administracion,
-  "2026-10-07 11:10",
+  ISODate("2026-10-07T11:10:00Z"),
 );
 
-crearArchivo("propuesta_proyecto_alpha.md", luis, alpha, "2026-04-22 10:40");
-crearArchivo("minuta_kickoff_alpha.txt", luis, proyectos, "2026-04-24 17:20");
-crearArchivo("cronograma_proyectos.txt", luis, proyectos, "2026-05-02 08:40");
-crearArchivo("requerimientos_alpha.txt", luis, alpha, "2026-05-08 15:55");
-crearArchivo("propuesta_proyecto_beta.md", luis, beta, "2026-05-14 11:25");
-crearArchivo("ideas_reunion_semanal.txt", luis, notas, "2026-05-22 10:10");
-crearArchivo("arquitectura_alpha.md", luis, documentacion, "2026-05-27 09:35");
-crearArchivo("requerimientos_beta.txt", luis, beta, "2026-06-05 09:00");
+crearArchivo(
+  "propuesta_proyecto_alpha.md",
+  luis,
+  alpha,
+  ISODate("2026-04-22T10:40:00Z"),
+);
+crearArchivo(
+  "minuta_kickoff_alpha.txt",
+  luis,
+  proyectos,
+  ISODate("2026-04-24T17:20:00Z"),
+);
+crearArchivo(
+  "cronograma_proyectos.txt",
+  luis,
+  proyectos,
+  ISODate("2026-05-02T08:40:00Z"),
+);
+crearArchivo(
+  "requerimientos_alpha.txt",
+  luis,
+  alpha,
+  ISODate("2026-05-08T15:55:00Z"),
+);
+crearArchivo(
+  "propuesta_proyecto_beta.md",
+  luis,
+  beta,
+  ISODate("2026-05-14T11:25:00Z"),
+);
+crearArchivo(
+  "ideas_reunion_semanal.txt",
+  luis,
+  notas,
+  ISODate("2026-05-22T10:10:00Z"),
+);
+crearArchivo(
+  "arquitectura_alpha.md",
+  luis,
+  documentacion,
+  ISODate("2026-05-27T09:35:00Z"),
+);
+crearArchivo(
+  "requerimientos_beta.txt",
+  luis,
+  beta,
+  ISODate("2026-06-05T09:00:00Z"),
+);
 crearArchivo(
   "manual_usuario_alpha.md",
   luis,
   documentacion,
-  "2026-06-12 14:05",
+  ISODate("2026-06-12T14:05:00Z"),
 );
-crearArchivo("presupuesto_proyectos.md", luis, proyectos, "2026-06-19 12:15");
+crearArchivo(
+  "presupuesto_proyectos.md",
+  luis,
+  proyectos,
+  ISODate("2026-06-19T12:15:00Z"),
+);
 crearArchivo(
   "guia_instalacion_alpha.txt",
   luis,
   documentacion,
-  "2026-07-02 10:20",
+  ISODate("2026-07-02T10:20:00Z"),
 );
-crearArchivo("plan_pruebas_beta.txt", luis, beta, "2026-07-16 13:50");
-crearArchivo("notas_capacitacion_mongodb.md", luis, notas, "2026-07-23 09:55");
-crearArchivo("bitacora_alpha_julio.txt", luis, alpha, "2026-07-29 16:45");
+crearArchivo(
+  "plan_pruebas_beta.txt",
+  luis,
+  beta,
+  ISODate("2026-07-16T13:50:00Z"),
+);
+crearArchivo(
+  "notas_capacitacion_mongodb.md",
+  luis,
+  notas,
+  ISODate("2026-07-23T09:55:00Z"),
+);
+crearArchivo(
+  "bitacora_alpha_julio.txt",
+  luis,
+  alpha,
+  ISODate("2026-07-29T16:45:00Z"),
+);
 crearArchivo(
   "borrador_presentacion_cliente.md",
   luis,
   null,
-  "2026-08-12 11:00",
+  ISODate("2026-08-12T11:00:00Z"),
 );
-crearArchivo("informe_avance_beta.md", luis, beta, "2026-08-27 15:30");
-crearArchivo("pendientes_septiembre.txt", luis, notas, "2026-09-01 08:35");
-crearArchivo("lecciones_aprendidas.md", luis, notas, "2026-09-17 14:40");
+crearArchivo(
+  "informe_avance_beta.md",
+  luis,
+  beta,
+  ISODate("2026-08-27T15:30:00Z"),
+);
+crearArchivo(
+  "pendientes_septiembre.txt",
+  luis,
+  notas,
+  ISODate("2026-09-01T08:35:00Z"),
+);
+crearArchivo(
+  "lecciones_aprendidas.md",
+  luis,
+  notas,
+  ISODate("2026-09-17T14:40:00Z"),
+);
 crearArchivo(
   "resumen_diseño_proyectos_2026.txt",
   luis,
   null,
-  "2026-10-02 15:00",
+  ISODate("2026-10-02T15:00:00Z"),
 );
 crearArchivo(
   "checklist_entrega_final.txt",
   luis,
   proyectos,
-  "2026-10-12 10:25",
+  ISODate("2026-10-12T10:25:00Z"),
 );
 
-crearArchivo("presupuesto_anual_2026.md", maria, f2026, "2026-04-21 09:30");
-crearArchivo("balance_general_2025.md", maria, f2025, "2026-05-04 09:05");
-crearArchivo("flujo_caja_enero.txt", maria, f2026, "2026-05-18 14:15");
-crearArchivo("estado_resultados_2025.txt", maria, f2025, "2026-05-25 13:40");
-crearArchivo("metas_personales.md", maria, personal, "2026-05-31 18:10");
-crearArchivo("flujo_caja_febrero.txt", maria, f2026, "2026-06-08 10:50");
-crearArchivo("politica_cobranza.txt", maria, finanzas, "2026-06-17 12:30");
+crearArchivo(
+  "presupuesto_anual_2026.md",
+  maria,
+  f2026,
+  ISODate("2026-04-21T09:30:00Z"),
+);
+crearArchivo(
+  "balance_general_2025.md",
+  maria,
+  f2025,
+  ISODate("2026-05-04T09:05:00Z"),
+);
+crearArchivo(
+  "flujo_caja_enero.txt",
+  maria,
+  f2026,
+  ISODate("2026-05-18T14:15:00Z"),
+);
+crearArchivo(
+  "estado_resultados_2025.txt",
+  maria,
+  f2025,
+  ISODate("2026-05-25T13:40:00Z"),
+);
+crearArchivo(
+  "metas_personales.md",
+  maria,
+  personal,
+  ISODate("2026-05-31T18:10:00Z"),
+);
+crearArchivo(
+  "flujo_caja_febrero.txt",
+  maria,
+  f2026,
+  ISODate("2026-06-08T10:50:00Z"),
+);
+crearArchivo(
+  "politica_cobranza.txt",
+  maria,
+  finanzas,
+  ISODate("2026-06-17T12:30:00Z"),
+);
 crearArchivo(
   "conciliacion_bancaria_mayo.txt",
   maria,
   f2026,
-  "2026-06-29 16:05",
+  ISODate("2026-06-29T16:05:00Z"),
 );
-crearArchivo("cierre_contable_2025.txt", maria, f2025, "2026-07-06 15:20");
-crearArchivo("informe_impuestos_2025.md", maria, f2025, "2026-07-21 10:00");
-crearArchivo("proyeccion_ingresos_2026.md", maria, f2026, "2026-08-10 11:35");
-crearArchivo("ideas_capacitacion.txt", maria, personal, "2026-08-24 17:30");
+crearArchivo(
+  "cierre_contable_2025.txt",
+  maria,
+  f2025,
+  ISODate("2026-07-06T15:20:00Z"),
+);
+crearArchivo(
+  "informe_impuestos_2025.md",
+  maria,
+  f2025,
+  ISODate("2026-07-21T10:00:00Z"),
+);
+crearArchivo(
+  "proyeccion_ingresos_2026.md",
+  maria,
+  f2026,
+  ISODate("2026-08-10T11:35:00Z"),
+);
+crearArchivo(
+  "ideas_capacitacion.txt",
+  maria,
+  personal,
+  ISODate("2026-08-24T17:30:00Z"),
+);
 crearArchivo(
   "resumen_gastos_trimestre.md",
   maria,
   finanzas,
-  "2026-09-09 14:55",
+  ISODate("2026-09-09T14:55:00Z"),
 );
 crearArchivo(
   "lista_facturas_pendientes.txt",
   maria,
   finanzas,
-  "2026-09-28 09:40",
+  ISODate("2026-09-28T09:40:00Z"),
 );
-crearArchivo("plan_vacaciones.txt", maria, personal, "2026-10-09 12:45");
+crearArchivo(
+  "plan_vacaciones.txt",
+  maria,
+  personal,
+  ISODate("2026-10-09T12:45:00Z"),
+);
 
 const compartidos = [];
 const textoPermiso = {
   lectura: "lectura",
-  edicion: "edición",
+  edicion: "edicion",
   comentar: "comentar",
 };
 
 function compartir(recurso, tipo, dueño, destino, permiso, cuando) {
-  const fecha = fechaDe(cuando);
   const compartido = {
     _id: new ObjectId(),
     recurso_tipo: tipo,
@@ -304,88 +511,108 @@ function compartir(recurso, tipo, dueño, destino, permiso, cuando) {
     propietario_id: dueño._id,
     usuario_destino_id: destino._id,
     permiso,
-    createdAt: fecha,
-    updatedAt: fecha,
+    createdAt: cuando,
+    updatedAt: cuando,
   };
   compartidos.push(compartido);
   registrar(
     dueño,
     "compartir",
     `Compartió ${tipo === "carpeta" ? "la carpeta" : "el archivo"} «${recurso.nombre}» con ${destino.nombre} (permiso: ${textoPermiso[permiso]})`,
-    fecha,
-    recurso,
+    cuando,
   );
   return { compartido, recurso, tipo, dueño, destino };
 }
 const compartirArchivo = (nombre, dueño, destino, permiso, cuando) =>
   compartir(archivo(nombre), "archivo", dueño, destino, permiso, cuando);
 
-compartir(contratos, "carpeta", ana, luis, "lectura", "2026-04-18 10:00");
-compartir(proyectos, "carpeta", luis, maria, "edicion", "2026-04-18 11:00");
-compartir(finanzas, "carpeta", maria, ana, "comentar", "2026-04-18 12:00");
+compartir(
+  contratos,
+  "carpeta",
+  ana,
+  luis,
+  "lectura",
+  ISODate("2026-04-18T10:00:00Z"),
+);
+compartir(
+  proyectos,
+  "carpeta",
+  luis,
+  maria,
+  "edicion",
+  ISODate("2026-04-18T11:00:00Z"),
+);
+compartir(
+  finanzas,
+  "carpeta",
+  maria,
+  ana,
+  "comentar",
+  ISODate("2026-04-18T12:00:00Z"),
+);
 
 compartirArchivo(
   "contrato_marco_proveedores.txt",
   ana,
   luis,
   "lectura",
-  "2026-04-21 11:00",
+  ISODate("2026-04-21T11:00:00Z"),
 );
 compartirArchivo(
   "contrato_marco_proveedores.txt",
   ana,
   maria,
   "comentar",
-  "2026-04-21 11:05",
+  ISODate("2026-04-21T11:05:00Z"),
 );
 compartirArchivo(
   "informe_trimestral_q1.md",
   ana,
   maria,
   "lectura",
-  "2026-05-07 10:00",
+  ISODate("2026-05-07T10:00:00Z"),
 );
 compartirArchivo(
   "acuerdo_confidencialidad.md",
   ana,
   luis,
   "comentar",
-  "2026-05-12 09:30",
+  ISODate("2026-05-12T09:30:00Z"),
 );
 compartirArchivo(
   "politica_seguridad_informacion.md",
   ana,
   luis,
   "lectura",
-  "2026-05-21 08:00",
+  ISODate("2026-05-21T08:00:00Z"),
 );
 compartirArchivo(
   "politica_seguridad_informacion.md",
   ana,
   maria,
   "lectura",
-  "2026-05-21 08:05",
+  ISODate("2026-05-21T08:05:00Z"),
 );
 compartirArchivo(
   "manual_induccion_empleados.md",
   ana,
   maria,
   "edicion",
-  "2026-06-16 09:00",
+  ISODate("2026-06-16T09:00:00Z"),
 );
 compartirArchivo(
   "acta_reunion_directiva_junio.txt",
   ana,
   luis,
   "comentar",
-  "2026-07-01 10:00",
+  ISODate("2026-07-01T10:00:00Z"),
 );
 compartirArchivo(
   "informe_trimestral_q2.md",
   ana,
   luis,
   "lectura",
-  "2026-07-09 09:00",
+  ISODate("2026-07-09T09:00:00Z"),
 );
 
 compartirArchivo(
@@ -393,63 +620,63 @@ compartirArchivo(
   luis,
   ana,
   "lectura",
-  "2026-04-23 09:00",
+  ISODate("2026-04-23T09:00:00Z"),
 );
 compartirArchivo(
   "propuesta_proyecto_alpha.md",
   luis,
   maria,
   "comentar",
-  "2026-04-23 09:05",
+  ISODate("2026-04-23T09:05:00Z"),
 );
 const cronogramaAna = compartirArchivo(
   "cronograma_proyectos.txt",
   luis,
   ana,
   "edicion",
-  "2026-05-03 09:00",
+  ISODate("2026-05-03T09:00:00Z"),
 );
 compartirArchivo(
   "cronograma_proyectos.txt",
   luis,
   maria,
   "lectura",
-  "2026-05-03 09:05",
+  ISODate("2026-05-03T09:05:00Z"),
 );
 compartirArchivo(
   "arquitectura_alpha.md",
   luis,
   ana,
   "comentar",
-  "2026-05-28 10:00",
+  ISODate("2026-05-28T10:00:00Z"),
 );
 compartirArchivo(
   "manual_usuario_alpha.md",
   luis,
   maria,
   "lectura",
-  "2026-06-13 09:30",
+  ISODate("2026-06-13T09:30:00Z"),
 );
 compartirArchivo(
   "presupuesto_proyectos.md",
   luis,
   maria,
   "comentar",
-  "2026-06-20 10:30",
+  ISODate("2026-06-20T10:30:00Z"),
 );
 compartirArchivo(
   "guia_instalacion_alpha.txt",
   luis,
   ana,
   "lectura",
-  "2026-07-03 11:00",
+  ISODate("2026-07-03T11:00:00Z"),
 );
 compartirArchivo(
   "notas_capacitacion_mongodb.md",
   luis,
   ana,
   "lectura",
-  "2026-07-24 10:00",
+  ISODate("2026-07-24T10:00:00Z"),
 );
 
 compartirArchivo(
@@ -457,58 +684,56 @@ compartirArchivo(
   maria,
   ana,
   "lectura",
-  "2026-04-22 10:00",
+  ISODate("2026-04-22T10:00:00Z"),
 );
 compartirArchivo(
   "presupuesto_anual_2026.md",
   maria,
   luis,
   "comentar",
-  "2026-04-22 10:05",
+  ISODate("2026-04-22T10:05:00Z"),
 );
 compartirArchivo(
   "flujo_caja_enero.txt",
   maria,
   ana,
   "comentar",
-  "2026-05-19 09:00",
+  ISODate("2026-05-19T09:00:00Z"),
 );
 compartirArchivo(
   "politica_cobranza.txt",
   maria,
   luis,
   "lectura",
-  "2026-06-18 09:30",
+  ISODate("2026-06-18T09:30:00Z"),
 );
 compartirArchivo(
   "proyeccion_ingresos_2026.md",
   maria,
   ana,
   "edicion",
-  "2026-08-11 09:00",
+  ISODate("2026-08-11T09:00:00Z"),
 );
 compartirArchivo(
   "resumen_gastos_trimestre.md",
   maria,
   luis,
   "lectura",
-  "2026-09-10 10:00",
+  ISODate("2026-09-10T10:00:00Z"),
 );
 
 function cambiarPermiso(registro, permisoNuevo, cuando) {
-  const fecha = fechaDe(cuando);
   const anterior = registro.compartido.permiso;
   registro.compartido.permiso = permisoNuevo;
-  registro.compartido.updatedAt = fecha;
+  registro.compartido.updatedAt = cuando;
   registrar(
     registro.dueño,
     "modificar_permiso",
     `Cambió el permiso de ${registro.destino.nombre} sobre «${registro.recurso.nombre}» de ${textoPermiso[anterior]} a ${textoPermiso[permisoNuevo]}`,
-    fecha,
-    registro.recurso,
+    cuando,
   );
 }
-cambiarPermiso(cronogramaAna, "lectura", "2026-09-12 14:00");
+cambiarPermiso(cronogramaAna, "lectura", ISODate("2026-09-12T14:00:00Z"));
 
 function revocar(registro, cuando) {
   compartidos.splice(compartidos.indexOf(registro.compartido), 1);
@@ -516,8 +741,7 @@ function revocar(registro, cuando) {
     registro.dueño,
     "revocar_permiso",
     `Retiró el acceso de ${registro.destino.nombre} al archivo «${registro.recurso.nombre}»`,
-    fechaDe(cuando),
-    registro.recurso,
+    cuando,
   );
 }
 const temporal = compartirArchivo(
@@ -525,256 +749,289 @@ const temporal = compartirArchivo(
   luis,
   maria,
   "lectura",
-  "2026-07-24 10:10",
+  ISODate("2026-07-24T10:10:00Z"),
 );
-revocar(temporal, "2026-08-03 09:00");
+revocar(temporal, ISODate("2026-08-03T09:00:00Z"));
 
 const comentarios = [];
 function comentar(usuario, nombreArchivo, texto, cuando) {
   const documento = archivo(nombreArchivo);
-  const fecha = fechaDe(cuando);
   comentarios.push({
     _id: new ObjectId(),
     documento_id: documento._id,
     usuario: { _id: usuario._id, nombre: usuario.nombre },
     texto,
-    createdAt: fecha,
-    updatedAt: fecha,
+    createdAt: cuando,
+    updatedAt: cuando,
   });
   registrar(
     usuario,
     "comentar",
     `Comentó en el archivo «${nombreArchivo}»`,
-    fecha,
-    documento,
+    cuando,
   );
 }
 comentar(
   maria,
   "contrato_marco_proveedores.txt",
   "Revisé las cláusulas de pago, todo en orden.",
-  "2026-04-22 09:00",
+  ISODate("2026-04-22T09:00:00Z"),
 );
 comentar(
   ana,
   "contrato_marco_proveedores.txt",
   "Gracias, quedo atenta a más observaciones.",
-  "2026-04-22 10:30",
+  ISODate("2026-04-22T10:30:00Z"),
 );
 comentar(
   luis,
   "presupuesto_anual_2026.md",
   "Aprobado de mi parte.",
-  "2026-04-23 15:00",
+  ISODate("2026-04-23T15:00:00Z"),
 );
 comentar(
   maria,
   "propuesta_proyecto_alpha.md",
   "¿Podemos confirmar el alcance antes del kickoff?",
-  "2026-04-24 08:45",
+  ISODate("2026-04-24T08:45:00Z"),
 );
 comentar(
   luis,
   "propuesta_proyecto_alpha.md",
   "Sí, lo revisamos en la reunión del jueves.",
-  "2026-04-24 10:00",
+  ISODate("2026-04-24T10:00:00Z"),
 );
 comentar(
   luis,
   "acuerdo_confidencialidad.md",
   "Falta definir la vigencia del acuerdo.",
-  "2026-05-13 10:00",
+  ISODate("2026-05-13T10:00:00Z"),
 );
 comentar(
   ana,
   "acuerdo_confidencialidad.md",
   "Lo agrego hoy mismo.",
-  "2026-05-13 11:15",
+  ISODate("2026-05-13T11:15:00Z"),
 );
 comentar(
   ana,
   "flujo_caja_enero.txt",
   "Confirmar la cifra de ingresos de la semana 3.",
-  "2026-05-20 10:30",
+  ISODate("2026-05-20T10:30:00Z"),
 );
 comentar(
   ana,
   "arquitectura_alpha.md",
   "Sugiero documentar también el diagrama de despliegue.",
-  "2026-05-29 14:00",
+  ISODate("2026-05-29T14:00:00Z"),
 );
 comentar(
   maria,
   "presupuesto_proyectos.md",
   "Los montos del segundo trimestre no coinciden con finanzas.",
-  "2026-06-21 09:20",
+  ISODate("2026-06-21T09:20:00Z"),
 );
 comentar(
   luis,
   "presupuesto_proyectos.md",
   "Gracias, los corrijo.",
-  "2026-06-21 11:00",
+  ISODate("2026-06-21T11:00:00Z"),
 );
 comentar(
   luis,
   "acta_reunion_directiva_junio.txt",
   "Hay un acuerdo repetido en el punto 4.",
-  "2026-07-02 09:30",
+  ISODate("2026-07-02T09:30:00Z"),
 );
 
 function descargar(usuario, nombreArchivo, cuando) {
+  archivo(nombreArchivo);
   registrar(
     usuario,
     "descargar",
     `Descargó el archivo «${nombreArchivo}»`,
-    fechaDe(cuando),
-    archivo(nombreArchivo),
+    cuando,
   );
 }
-descargar(ana, "contrato_marco_proveedores.txt", "2026-04-22 09:10");
-descargar(maria, "propuesta_proyecto_alpha.md", "2026-04-24 08:30");
-descargar(ana, "presupuesto_anual_2026.md", "2026-04-23 08:50");
-descargar(luis, "contrato_marco_proveedores.txt", "2026-04-25 11:20");
-descargar(luis, "propuesta_proyecto_alpha.md", "2026-04-25 09:00");
-descargar(maria, "contrato_marco_proveedores.txt", "2026-04-26 14:00");
-descargar(ana, "propuesta_proyecto_alpha.md", "2026-04-27 12:00");
-descargar(ana, "contrato_marco_proveedores.txt", "2026-05-15 10:00");
-descargar(luis, "politica_seguridad_informacion.md", "2026-05-22 09:30");
-descargar(maria, "politica_seguridad_informacion.md", "2026-05-26 13:00");
-descargar(luis, "propuesta_proyecto_alpha.md", "2026-05-30 10:30");
-descargar(maria, "presupuesto_anual_2026.md", "2026-06-01 09:15");
-descargar(luis, "manual_usuario_alpha.md", "2026-06-14 11:15");
-descargar(maria, "manual_usuario_alpha.md", "2026-06-14 15:40");
-descargar(ana, "contrato_marco_proveedores.txt", "2026-07-01 16:30");
+descargar(
+  ana,
+  "contrato_marco_proveedores.txt",
+  ISODate("2026-04-22T09:10:00Z"),
+);
+descargar(
+  maria,
+  "propuesta_proyecto_alpha.md",
+  ISODate("2026-04-24T08:30:00Z"),
+);
+descargar(ana, "presupuesto_anual_2026.md", ISODate("2026-04-23T08:50:00Z"));
+descargar(
+  luis,
+  "contrato_marco_proveedores.txt",
+  ISODate("2026-04-25T11:20:00Z"),
+);
+descargar(luis, "propuesta_proyecto_alpha.md", ISODate("2026-04-25T09:00:00Z"));
+descargar(
+  maria,
+  "contrato_marco_proveedores.txt",
+  ISODate("2026-04-26T14:00:00Z"),
+);
+descargar(ana, "propuesta_proyecto_alpha.md", ISODate("2026-04-27T12:00:00Z"));
+descargar(
+  ana,
+  "contrato_marco_proveedores.txt",
+  ISODate("2026-05-15T10:00:00Z"),
+);
+descargar(
+  luis,
+  "politica_seguridad_informacion.md",
+  ISODate("2026-05-22T09:30:00Z"),
+);
+descargar(
+  maria,
+  "politica_seguridad_informacion.md",
+  ISODate("2026-05-26T13:00:00Z"),
+);
+descargar(luis, "propuesta_proyecto_alpha.md", ISODate("2026-05-30T10:30:00Z"));
+descargar(maria, "presupuesto_anual_2026.md", ISODate("2026-06-01T09:15:00Z"));
+descargar(luis, "manual_usuario_alpha.md", ISODate("2026-06-14T11:15:00Z"));
+descargar(maria, "manual_usuario_alpha.md", ISODate("2026-06-14T15:40:00Z"));
+descargar(
+  ana,
+  "contrato_marco_proveedores.txt",
+  ISODate("2026-07-01T16:30:00Z"),
+);
 
+// ---------- Renombrar y mover ----------
 function renombrar(nombreActual, nombreNuevo, cuando) {
   const documento = archivo(nombreActual);
   documento.nombre = nombreNuevo;
-  documento.updatedAt = fechaDe(cuando);
+  documento.updatedAt = cuando;
   registrar(
     dueñoDe(documento.propietario_id),
     "renombrar",
     `Renombró el archivo «${nombreActual}» a «${nombreNuevo}»`,
-    documento.updatedAt,
-    documento,
+    cuando,
   );
 }
 renombrar(
   "directorio_proveedores.md",
   "directorio_proveedores_2026.md",
-  "2026-08-20 09:50",
+  ISODate("2026-08-20T09:50:00Z"),
 );
 renombrar(
   "metas_personales.md",
   "metas_personales_2026.md",
-  "2026-09-30 10:00",
+  ISODate("2026-09-30T10:00:00Z"),
 );
 
 function moverArchivo(nombre, destino, cuando) {
   const documento = archivo(nombre);
   const origen = carpetaPorId(documento.carpeta_id);
   documento.carpeta_id = destino._id;
-  documento.updatedAt = fechaDe(cuando);
+  documento.updatedAt = cuando;
   registrar(
     dueñoDe(documento.propietario_id),
     "mover",
     `Movió el archivo «${nombre}» de la carpeta «${origen.nombre}» a la carpeta «${destino.nombre}»`,
-    documento.updatedAt,
-    documento,
+    cuando,
   );
 }
-moverArchivo("requerimientos_alpha.txt", documentacion, "2026-06-25 10:00");
-moverArchivo("lista_facturas_pendientes.txt", f2026, "2026-10-01 14:00");
+moverArchivo(
+  "requerimientos_alpha.txt",
+  documentacion,
+  ISODate("2026-06-25T10:00:00Z"),
+);
+moverArchivo(
+  "lista_facturas_pendientes.txt",
+  f2026,
+  ISODate("2026-10-01T14:00:00Z"),
+);
 
 function archivoAPapelera(nombre, cuando) {
   const documento = archivo(nombre);
-  const fecha = fechaDe(cuando);
-  documento.eliminado = true;
-  documento.fecha_eliminacion = fecha;
-  documento.updatedAt = fecha;
+  documento.fecha_eliminacion = cuando;
+  documento.updatedAt = cuando;
   registrar(
     dueñoDe(documento.propietario_id),
     "eliminar",
     `Envió a la papelera el archivo «${nombre}»`,
-    fecha,
-    documento,
+    cuando,
   );
 }
 
 function restaurarArchivo(nombre, cuando) {
   const documento = archivo(nombre);
-  const fecha = fechaDe(cuando);
-  documento.eliminado = false;
   documento.fecha_eliminacion = null;
-  documento.updatedAt = fecha;
+  documento.updatedAt = cuando;
   registrar(
     dueñoDe(documento.propietario_id),
     "restaurar",
     `Restauró el archivo «${nombre}» desde la papelera`,
-    fecha,
-    documento,
+    cuando,
   );
 }
 
 function carpetaAPapelera(raiz, cuando) {
-  const fecha = fechaDe(cuando);
   const subarbol = carpetas.filter(
     (c) =>
       mismoId(c._id, raiz._id) || c.ancestros.some((a) => mismoId(a, raiz._id)),
   );
   const idsCarpetas = subarbol.map((c) => c._id.toString());
   subarbol.forEach((c) => {
-    c.eliminado = true;
-    c.fecha_eliminacion = fecha;
-    c.updatedAt = fecha;
+    c.fecha_eliminacion = cuando;
+    c.updatedAt = cuando;
   });
   const archivos = documentos.filter(
     (d) =>
       d.carpeta_id &&
       idsCarpetas.includes(d.carpeta_id.toString()) &&
-      !d.eliminado,
+      d.fecha_eliminacion === null,
   );
   archivos.forEach((d) => {
-    d.eliminado = true;
-    d.fecha_eliminacion = fecha;
-    d.updatedAt = fecha;
+    d.fecha_eliminacion = cuando;
+    d.updatedAt = cuando;
   });
   registrar(
     dueñoDe(raiz.propietario_id),
     "eliminar",
     `Envió a la papelera la carpeta «${raiz.nombre}» (${archivos.length} archivos y ${subarbol.length - 1} subcarpetas)`,
-    fecha,
-    raiz,
+    cuando,
   );
 }
 
-archivoAPapelera("ideas_reunion_semanal.txt", "2026-06-02 16:00");
-archivoAPapelera("conciliacion_bancaria_mayo.txt", "2026-07-15 09:05");
-archivoAPapelera("bitacora_alpha_julio.txt", "2026-08-30 09:30");
-archivoAPapelera("informe_auditoria_interna.txt", "2026-09-10 10:00");
-archivoAPapelera("ideas_capacitacion.txt", "2026-09-15 11:20");
-carpetaAPapelera(beta, "2026-10-08 09:00");
-carpetaAPapelera(f2025, "2026-10-10 10:30");
-archivoAPapelera("politica_gastos_viaje.txt", "2026-09-20 10:00");
-restaurarArchivo("politica_gastos_viaje.txt", "2026-09-21 09:00");
+archivoAPapelera("ideas_reunion_semanal.txt", ISODate("2026-06-02T16:00:00Z"));
+archivoAPapelera(
+  "conciliacion_bancaria_mayo.txt",
+  ISODate("2026-07-15T09:05:00Z"),
+);
+archivoAPapelera("bitacora_alpha_julio.txt", ISODate("2026-08-30T09:30:00Z"));
+archivoAPapelera(
+  "informe_auditoria_interna.txt",
+  ISODate("2026-09-10T10:00:00Z"),
+);
+archivoAPapelera("ideas_capacitacion.txt", ISODate("2026-09-15T11:20:00Z"));
+carpetaAPapelera(beta, ISODate("2026-10-08T09:00:00Z"));
+carpetaAPapelera(f2025, ISODate("2026-10-10T10:30:00Z"));
+archivoAPapelera("politica_gastos_viaje.txt", ISODate("2026-09-20T10:00:00Z"));
+restaurarArchivo("politica_gastos_viaje.txt", ISODate("2026-09-21T09:00:00Z"));
 
 registrar(
   luis,
   "subir",
   "Subió el archivo «borrador_descartado.txt» a la carpeta «Notas»",
-  fechaDe("2026-06-26 10:00"),
+  ISODate("2026-06-26T10:00:00Z"),
 );
 registrar(
   luis,
   "eliminar",
   "Envió a la papelera el archivo «borrador_descartado.txt»",
-  fechaDe("2026-06-27 09:00"),
+  ISODate("2026-06-27T09:00:00Z"),
 );
 registrar(
   luis,
   "eliminar_permanente",
   "Eliminó definitivamente el archivo «borrador_descartado.txt»",
-  fechaDe("2026-08-04 15:30"),
+  ISODate("2026-08-04T15:30:00Z"),
 );
 
 historial.sort((a, b) => a.createdAt - b.createdAt);
@@ -798,8 +1055,8 @@ print("\nCarga inicial completada:");
   print(`  ${nombre.padEnd(22)} ${bd.getCollection(nombre).countDocuments()}`);
 });
 print(
-  `  archivos en papelera   ${bd.documento.countDocuments({ eliminado: true })}`,
+  `  archivos en papelera   ${bd.documento.countDocuments({ fecha_eliminacion: { $ne: null } })}`,
 );
 print(
-  `  carpetas en papelera   ${bd.carpeta.countDocuments({ eliminado: true })}`,
+  `  carpetas en papelera   ${bd.carpeta.countDocuments({ fecha_eliminacion: { $ne: null } })}`,
 );

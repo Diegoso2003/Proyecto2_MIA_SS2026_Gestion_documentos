@@ -1,25 +1,30 @@
 <div class="mx-auto max-w-7xl space-y-6 p-4 md:p-6">
-  <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+  <div class="grid grid-cols-1 items-center gap-4 md:grid-cols-[1fr_2fr_1fr]">
     <h1 class="text-2xl font-medium">Usuarios</h1>
-    <button matButton="filled" (click)="abrirCrear()">
-      <mat-icon>add</mat-icon> Nuevo usuario
-    </button>
+    <div class="flex w-full justify-center">
+      <app-usuario-busqueda
+        [filtrosActivos]="filtrosActivos()"
+        (buscar)="buscarNombre($event)"
+        (abrirFiltros)="abrirFiltros()"
+        class="w-full max-w-2xl"
+      />
+    </div>
+    <div class="flex md:justify-end">
+      <button matButton="filled" (click)="abrirCrear()" class="whitespace-nowrap w-full sm:w-auto">
+        <mat-icon>add</mat-icon> Nuevo usuario
+      </button>
+    </div>
   </div>
-
-  <app-usuario-busqueda
-    [filtrosActivos]="filtrosActivos()"
-    (buscar)="buscarNombre($event)"
-    (abrirFiltros)="abrirFiltros()"
-  />
-
   @if (usuarios().length) {
     <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
       @for (u of usuarios(); track u._id) {
-        <app-usuario-card
-          [usuario]="u"
-          (toggle)="cambiarEstado(u)"
-          (editar)="abrirEditar($event)"
-        />
+        @if (u._id !== usuarioId()) {
+          <app-usuario-card
+            [usuario]="u"
+            (actuEstado)="cambiarEstado(u)"
+            (editar)="abrirEditar($event)"
+          />
+        }
       }
     </div>
   } @else {
