@@ -60,6 +60,7 @@ function crearCarpeta(nombre, dueño, padre, creada) {
     padre_id: padre ? padre._id : null,
     ancestros: padre ? [...padre.ancestros, padre._id] : [],
     fecha_eliminacion: null,
+    modificado_por: dueño._id,
     createdAt: creada,
     updatedAt: creada,
   };
@@ -178,9 +179,11 @@ function crearArchivo(nombre, dueño, carpeta, creado) {
     nombre,
     propietario_id: dueño._id,
     carpeta_id: carpeta ? carpeta._id : null,
+    ancestros: carpeta ? [...carpeta.ancestros, carpeta._id] : [],
     detalles: { extension, tipo_mime },
     contenido: contenidoDe(nombre, dueño, extension),
     fecha_eliminacion: null,
+    modificado_por: dueño._id,
     createdAt: creado,
     updatedAt: creado,
   };
@@ -901,13 +904,14 @@ descargar(
   ISODate("2026-07-01T16:30:00Z"),
 );
 
-// ---------- Renombrar y mover ----------
 function renombrar(nombreActual, nombreNuevo, cuando) {
   const documento = archivo(nombreActual);
+  const dueño = dueñoDe(documento.propietario_id);
   documento.nombre = nombreNuevo;
+  documento.modificado_por = dueño._id;
   documento.updatedAt = cuando;
   registrar(
-    dueñoDe(documento.propietario_id),
+    dueño,
     "renombrar",
     `Renombró el archivo «${nombreActual}» a «${nombreNuevo}»`,
     cuando,
@@ -926,11 +930,14 @@ renombrar(
 
 function moverArchivo(nombre, destino, cuando) {
   const documento = archivo(nombre);
+  const dueño = dueñoDe(documento.propietario_id);
   const origen = carpetaPorId(documento.carpeta_id);
   documento.carpeta_id = destino._id;
+  documento.ancestros = [...destino.ancestros, destino._id];
+  documento.modificado_por = dueño._id;
   documento.updatedAt = cuando;
   registrar(
-    dueñoDe(documento.propietario_id),
+    dueño,
     "mover",
     `Movió el archivo «${nombre}» de la carpeta «${origen.nombre}» a la carpeta «${destino.nombre}»`,
     cuando,
@@ -949,10 +956,12 @@ moverArchivo(
 
 function archivoAPapelera(nombre, cuando) {
   const documento = archivo(nombre);
+  const dueño = dueñoDe(documento.propietario_id);
   documento.fecha_eliminacion = cuando;
+  documento.modificado_por = dueño._id;
   documento.updatedAt = cuando;
   registrar(
-    dueñoDe(documento.propietario_id),
+    dueño,
     "eliminar",
     `Envió a la papelera el archivo «${nombre}»`,
     cuando,
@@ -961,10 +970,12 @@ function archivoAPapelera(nombre, cuando) {
 
 function restaurarArchivo(nombre, cuando) {
   const documento = archivo(nombre);
+  const dueño = dueñoDe(documento.propietario_id);
   documento.fecha_eliminacion = null;
+  documento.modificado_por = dueño._id;
   documento.updatedAt = cuando;
   registrar(
-    dueñoDe(documento.propietario_id),
+    dueño,
     "restaurar",
     `Restauró el archivo «${nombre}» desde la papelera`,
     cuando,
@@ -972,27 +983,28 @@ function restaurarArchivo(nombre, cuando) {
 }
 
 function carpetaAPapelera(raiz, cuando) {
+  const dueño = dueñoDe(raiz.propietario_id);
   const subarbol = carpetas.filter(
     (c) =>
       mismoId(c._id, raiz._id) || c.ancestros.some((a) => mismoId(a, raiz._id)),
   );
-  const idsCarpetas = subarbol.map((c) => c._id.toString());
   subarbol.forEach((c) => {
     c.fecha_eliminacion = cuando;
+    c.modificado_por = dueño._id;
     c.updatedAt = cuando;
   });
   const archivos = documentos.filter(
     (d) =>
-      d.carpeta_id &&
-      idsCarpetas.includes(d.carpeta_id.toString()) &&
+      d.ancestros.some((a) => mismoId(a, raiz._id)) &&
       d.fecha_eliminacion === null,
   );
   archivos.forEach((d) => {
     d.fecha_eliminacion = cuando;
+    d.modificado_por = dueño._id;
     d.updatedAt = cuando;
   });
   registrar(
-    dueñoDe(raiz.propietario_id),
+    dueño,
     "eliminar",
     `Envió a la papelera la carpeta «${raiz.nombre}» (${archivos.length} archivos y ${subarbol.length - 1} subcarpetas)`,
     cuando,
