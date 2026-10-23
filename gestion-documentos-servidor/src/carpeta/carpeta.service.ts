@@ -34,9 +34,11 @@ export class CarpetaService {
   ): Promise<CarpetaElementosRequest> {
     const carpeta = await this.carpetaRepasitory.obtenerCarpeta(carpetaId);
     if (!carpeta || carpeta.fecha_eliminacion !== null) {
+      console.log(carpetaId);
+      console.log(carpeta);
       throw new NotFoundException('carpeta no encontrada');
     }
-    if (carpeta.propietario_id === usuario._id) {
+    if (carpeta.propietario_id.toString() === usuario._id.toString()) {
       return {
         carpetas: await this.carpetaRepasitory.obtenerCarpetasHijas(carpetaId),
         nombre: carpeta.nombre,
@@ -45,6 +47,9 @@ export class CarpetaService {
           await this.documentoRepository.obtenerDocumentosPorCarpeta(carpetaId),
       };
     }
+    console.log(carpetaId);
+    console.log(carpeta);
+
     throw new NotFoundException('carpeta no encontrada');
   }
 

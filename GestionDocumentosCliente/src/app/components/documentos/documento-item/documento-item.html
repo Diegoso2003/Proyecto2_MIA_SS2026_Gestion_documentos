@@ -1,0 +1,55 @@
+<div
+  class="grid grid-cols-[minmax(0,1fr)_160px_100px_240px] items-center gap-4 px-4 py-1 border-b hover:bg-black/5"
+>
+  <a
+    class="flex items-center gap-3 truncate no-underline text-inherit"
+    [routerLink]="['/documento', documento()._id]"
+  >
+    <mat-icon>description</mat-icon>
+    <span class="truncate">{{ documento().nombre }}</span>
+  </a>
+  <span>{{ documento().updatedAt | date: 'dd/MM/yyyy HH:mm' }}</span>
+  <span>{{ tamano() }}</span>
+
+  <div class="flex items-center">
+    <button mat-icon-button matTooltip="Descargar" (click)="descargar()">
+      <mat-icon>download</mat-icon>
+    </button>
+    <button mat-icon-button matTooltip="Compartir" (click)="compartir()">
+      <mat-icon>person_add</mat-icon>
+    </button>
+    <button mat-icon-button matTooltip="Eliminar" (click)="eliminar()">
+      <mat-icon>delete</mat-icon>
+    </button>
+    <button mat-icon-button matTooltip="Destacar" (click)="destacar()">
+      <mat-icon>star_border</mat-icon>
+    </button>
+    <button mat-icon-button [matMenuTriggerFor]="menu"><mat-icon>more_vert</mat-icon></button>
+  </div>
+</div>
+
+<mat-menu #menu="matMenu">
+  <button mat-menu-item (click)="descargar()"><mat-icon>download</mat-icon>Descargar</button>
+  <button mat-menu-item (click)="compartir()"><mat-icon>person_add</mat-icon>Compartir</button>
+  <button mat-menu-item (click)="renombrar()"><mat-icon>edit</mat-icon>Cambiar nombre</button>
+  <button mat-menu-item (click)="destacar()"><mat-icon>star_border</mat-icon>Destacar</button>
+  <button mat-menu-item [matMenuTriggerFor]="detallesMenu" (menuOpened)="cargarDetalles()">
+    <mat-icon>info</mat-icon>Ver detalles
+  </button>
+  <button mat-menu-item (click)="eliminar()"><mat-icon>delete</mat-icon>Eliminar</button>
+</mat-menu>
+
+<mat-menu #detallesMenu="matMenu">
+  <div class="px-4 py-2 text-sm min-w-56" (click)="$event.stopPropagation()">
+    @if (detalles(); as d) {
+      <div class="flex flex-col gap-1">
+        <div><b>Tipo:</b> {{ d.tipo }}</div>
+        <div><b>Propietario:</b> {{ d.propietario }}</div>
+        <div><b>Creado:</b> {{ d.creado | date: 'dd/MM/yyyy HH:mm' }}</div>
+        <div><b>Ubicación:</b> {{ d.ubicacion }}</div>
+      </div>
+    } @else {
+      Cargando...
+    }
+  </div>
+</mat-menu>

@@ -1,1 +1,141 @@
-<p>mis-documentos works!</p>
+<div class="p-4 max-w-5xl mx-auto">
+  <button mat-flat-button [matMenuTriggerFor]="nuevoMenu"><mat-icon>add</mat-icon>Nuevo</button>
+  <mat-menu #nuevoMenu="matMenu">
+    <button mat-menu-item (click)="crearCarpeta()">
+      <mat-icon>create_new_folder</mat-icon>Nueva carpeta
+    </button>
+    <button mat-menu-item (click)="crearDocumento()">
+      <mat-icon>note_add</mat-icon>Nuevo documento
+    </button>
+    <button mat-menu-item (click)="fileInput.click()">
+      <mat-icon>upload_file</mat-icon>Cargar archivo
+    </button>
+  </mat-menu>
+  <input #fileInput type="file" hidden (change)="cargarArchivo($event)" />
+
+  @if (carpetaResource.isLoading()) {
+    <mat-progress-bar mode="indeterminate" />
+  }
+
+  @if (carpetaResource.value(); as contenido) {
+    <nav class="flex items-center justify-between gap-4 py-2">
+      <div class="flex items-center flex-wrap">
+        <a mat-button [routerLink]="['/']">Mis documentos</a>
+        @for (a of contenido.ancestros; track $index) {
+          <mat-icon>chevron_right</mat-icon>
+          <a mat-button [routerLink]="['/carpeta', a._id]">{{ a.nombre }}</a>
+        }
+        @if (id()) {
+          <mat-icon>chevron_right</mat-icon>
+          <a mat-button class="font-bold" [routerLink]="['/carpeta', id()]">{{
+            contenido.nombre
+          }}</a>
+        }
+      </div>
+
+      @if (id()) {
+        <div class="flex items-center">
+          <button mat-icon-button matTooltip="Descargar" (click)="descargarActual()">
+            <mat-icon>download</mat-icon>
+          </button>
+          <button mat-icon-button matTooltip="Compartir" (click)="compartirActual()">
+            <mat-icon>person_add</mat-icon>
+          </button>
+          <button mat-icon-button matTooltip="Eliminar" (click)="eliminarActual()">
+            <mat-icon>delete</mat-icon>
+          </button>
+          <button mat-icon-button matTooltip="Destacar" (click)="destacarActual()">
+            <mat-icon>star_border</mat-icon>
+          </button>
+          <button mat-icon-button [matMenuTriggerFor]="menuActual">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+        </div>
+        <mat-menu #menuActual="matMenu">
+          <button mat-menu-item (click)="descargarActual()">
+            <mat-icon>download</mat-icon>Descargar
+          </button>
+          <button mat-menu-item (click)="compartirActual()">
+            <mat-icon>person_add</mat-icon>Compartir
+          </button>
+          <button mat-menu-item (click)="renombrarActual(contenido.nombre)">
+            <mat-icon>edit</mat-icon>Cambiar nombre
+          </button>
+          <button mat-menu-item (click)="destacarActual()">
+            <mat-icon>star_border</mat-icon>Destacar
+          </button>
+          <button
+            mat-menu-item
+            [matMenuTriggerFor]="detallesActual"
+            (menuOpened)="cargarDetallesActual()"
+          >
+            <mat-icon>info</mat-icon>Ver detalles
+          </button>
+          <button mat-menu-item (click)="eliminarActual()">
+            <mat-icon>delete</mat-icon>Eliminar
+          </button>
+        </mat-menu>
+        <mat-menu #detallesActual="matMenu" (closed)="limpiarDetalles()">
+          <div class="px-4 py-3 text-sm min-w-64 max-w-80" (click)="$event.stopPropagation()">
+            @if (detalles(); as d) {
+              <div class="flex flex-col gap-2">
+                <div class="flex flex-col">
+                  <span class="text-xs text-gray-500">Nombre</span>
+                  <span class="font-medium break-all">{{ d.nombre }}</span>
+                </div>
+
+                <div class="flex flex-col">
+                  <span class="text-xs text-gray-500">Tipo</span>
+                  <span>{{ d.extension || '--' }}</span>
+                </div>
+
+                <div class="flex flex-col">
+                  <span class="text-xs text-gray-500">Tamaño</span>
+                  <span>{{ formatSize(d.tamano_bytes) }}</span>
+                </div>
+
+                <div class="flex flex-col">
+                  <span class="text-xs text-gray-500">Propietario</span>
+                  <span class="break-all">{{ d.propietario_id.correo || '--' }}</span>
+                </div>
+
+                <div class="flex flex-col">
+                  <span class="text-xs text-gray-500">Modificado por</span>
+                  <span class="break-all">{{ d.modificado_por.correo || '--' }}</span>
+                </div>
+
+                <div class="flex flex-col">
+                  <span class="text-xs text-gray-500">Última modificación</span>
+                  <span>
+                    {{ d.updatedAt ? (d.updatedAt | date: 'dd/MM/yyyy HH:mm') : '--' }}
+                  </span>
+                </div>
+              </div>
+            } @else {
+              <div class="flex items-center gap-2 text-gray-500">
+                <mat-icon class="!text-base">hourglass_empty</mat-icon>
+                <span>Cargando...</span>
+              </div>
+            }
+          </div>
+        </mat-menu>
+      }
+    </nav>
+
+    <div
+      class="grid grid-cols-[minmax(0,1fr)_160px_100px_240px] gap-4 px-4 py-2 border-b font-medium"
+    >
+      <span>Nombre</span><span>Última modificación</span><span>Tamaño</span><span></span>
+    </div>
+
+    @for (c of contenido.carpetas; track c._id) {
+      <app-carpeta-item [carpeta]="c" (cambio)="recargar()" />
+    }
+    @for (d of contenido.documentos; track d._id) {
+      <app-documento-item [documento]="d" (cambio)="recargar()" />
+    }
+    @if (!contenido.carpetas.length && !contenido.documentos.length) {
+      <p class="p-8 text-center opacity-60">Esta carpeta está vacía</p>
+    }
+  }
+</div>

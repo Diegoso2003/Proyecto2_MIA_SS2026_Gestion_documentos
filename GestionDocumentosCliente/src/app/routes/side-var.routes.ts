@@ -7,8 +7,16 @@ export const SIDE_VAR_ROUTES: Routes = [
     loadComponent: () => import('../components/side-bar/side-bar').then((m) => m.SideBar),
     children: [
       {
-        path: 'mis-documentos',
+        path: 'mis-documentos/:id',
         title: 'mis-documentos',
+        loadComponent: () =>
+          import('../components/documentos/mis-documentos/mis-documentos').then(
+            (m) => m.MisDocumentos,
+          ),
+      },
+      {
+        path: 'mis-documentos',
+        title: 'Mis documentos',
         loadComponent: () =>
           import('../components/documentos/mis-documentos/mis-documentos').then(
             (m) => m.MisDocumentos,

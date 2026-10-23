@@ -22,7 +22,7 @@ export class CarpetaController {
     return this.carpetaService.create(createCarpetaDto);
   }
 
-  @Get('/carpetas-usuario')
+  @Get()
   async findAll(@GetUsuario() usuario: UsuarioDocument) {
     return await this.carpetaService.findAll(usuario);
   }
