@@ -7,17 +7,45 @@ if (bd.usuario.countDocuments() > 0) {
 }
 
 const mismoId = (a, b) => a.toString() === b.toString();
+const tamañoEnBytes = (texto) => Buffer.byteLength(texto, "utf8");
+const ACCIONES_ARCHIVO = [
+  "subir",
+  "descargar",
+  "renombrar",
+  "mover",
+  "comentar",
+  "compartir",
+  "modificar_permiso",
+  "revocar_permiso",
+  "eliminar",
+  "restaurar",
+];
 
 const historial = [];
-function registrar(usuario, accion, descripcion, cuando) {
-  historial.push({
+const historialArchivo = [];
+
+function registrarEnArchivo(usuario, documento, accion, descripcion, cuando) {
+  historialArchivo.push({
+    documento_id: documento._id,
     usuario_id: usuario._id,
+    propietario_id: documento.propietario_id,
     accion,
     descripcion,
     createdAt: cuando,
   });
 }
 
+function registrar(usuario, accion, descripcion, cuando, documento = null) {
+  historial.push({
+    usuario_id: usuario._id,
+    accion,
+    descripcion,
+    createdAt: cuando,
+  });
+  if (documento && ACCIONES_ARCHIVO.includes(accion)) {
+    registrarEnArchivo(usuario, documento, accion, descripcion, cuando);
+  }
+}
 function crearUsuario(nombre, correo, rol, contraseña_hash) {
   return {
     _id: new ObjectId(),
@@ -28,6 +56,7 @@ function crearUsuario(nombre, correo, rol, contraseña_hash) {
     activo: true,
   };
 }
+
 const ana = crearUsuario(
   "Ana Morales",
   "ana_morales@gmail.com",
@@ -46,9 +75,9 @@ const maria = crearUsuario(
   "usuario",
   "$argon2id$v=19$m=65536,t=3,p=4$dLGS0oSRBTtjqQ0oRT36OQ$hjl47NTcHQnpVej0+URqAYuZf+hnaJGR8VQogQXj9zc",
 );
+
 const usuarios = [ana, luis, maria];
 const dueñoDe = (id) => usuarios.find((u) => mismoId(u._id, id));
-
 const carpetas = [];
 const carpetaPorId = (id) => carpetas.find((c) => mismoId(c._id, id));
 
@@ -60,6 +89,7 @@ function crearCarpeta(nombre, dueño, padre, creada) {
     padre_id: padre ? padre._id : null,
     ancestros: padre ? [...padre.ancestros, padre._id] : [],
     fecha_eliminacion: null,
+    eliminado_individual: false,
     modificado_por: dueño._id,
     createdAt: creada,
     updatedAt: creada,
@@ -154,7 +184,6 @@ const personal = crearCarpeta(
   null,
   ISODate("2026-04-17T11:30:00Z"),
 );
-
 const documentos = [];
 
 const archivo = (nombre) => {
@@ -164,7 +193,7 @@ const archivo = (nombre) => {
 };
 
 function contenidoDe(nombre, dueño, extension) {
-  const titulo = nombre.replace(/\.[^.]+$/, "").replace(/_/g, " ");
+  const titulo = nombre.split(".")[0];
   return extension === "md"
     ? `# ${titulo}\n\nAutor: ${dueño.nombre}\n\n- Documento de ejemplo para pruebas.\n- Archivo: ${nombre}\n- Texto en español: ñandú, canción, año.\n`
     : `${titulo}\nAutor: ${dueño.nombre}\n\nDocumento de ejemplo para pruebas.\nArchivo: ${nombre}\nTexto en español: ñandú, canción, año.\n`;
@@ -173,6 +202,7 @@ function contenidoDe(nombre, dueño, extension) {
 function crearArchivo(nombre, dueño, carpeta, creado) {
   const extension = nombre.split(".").pop();
   const tipo_mime = extension === "md" ? "text/markdown" : "text/plain";
+  const contenido = contenidoDe(nombre, dueño, extension);
 
   const documento = {
     _id: new ObjectId(),
@@ -180,9 +210,12 @@ function crearArchivo(nombre, dueño, carpeta, creado) {
     propietario_id: dueño._id,
     carpeta_id: carpeta ? carpeta._id : null,
     ancestros: carpeta ? [...carpeta.ancestros, carpeta._id] : [],
-    detalles: { extension, tipo_mime },
-    contenido: contenidoDe(nombre, dueño, extension),
+    extension,
+    tipo_mime,
+    tamano_bytes: tamañoEnBytes(contenido),
+    contenido,
     fecha_eliminacion: null,
+    eliminado_individual: false,
     modificado_por: dueño._id,
     createdAt: creado,
     updatedAt: creado,
@@ -193,6 +226,7 @@ function crearArchivo(nombre, dueño, carpeta, creado) {
     "subir",
     `Subió el archivo «${nombre}» a ${carpeta ? `la carpeta «${carpeta.nombre}»` : "la raíz"}`,
     creado,
+    documento,
   );
 }
 
@@ -523,9 +557,11 @@ function compartir(recurso, tipo, dueño, destino, permiso, cuando) {
     "compartir",
     `Compartió ${tipo === "carpeta" ? "la carpeta" : "el archivo"} «${recurso.nombre}» con ${destino.nombre} (permiso: ${textoPermiso[permiso]})`,
     cuando,
+    tipo === "archivo" ? recurso : null,
   );
   return { compartido, recurso, tipo, dueño, destino };
 }
+
 const compartirArchivo = (nombre, dueño, destino, permiso, cuando) =>
   compartir(archivo(nombre), "archivo", dueño, destino, permiso, cuando);
 
@@ -734,6 +770,7 @@ function cambiarPermiso(registro, permisoNuevo, cuando) {
     "modificar_permiso",
     `Cambió el permiso de ${registro.destino.nombre} sobre «${registro.recurso.nombre}» de ${textoPermiso[anterior]} a ${textoPermiso[permisoNuevo]}`,
     cuando,
+    registro.tipo === "archivo" ? registro.recurso : null,
   );
 }
 cambiarPermiso(cronogramaAna, "lectura", ISODate("2026-09-12T14:00:00Z"));
@@ -745,6 +782,7 @@ function revocar(registro, cuando) {
     "revocar_permiso",
     `Retiró el acceso de ${registro.destino.nombre} al archivo «${registro.recurso.nombre}»`,
     cuando,
+    registro.tipo === "archivo" ? registro.recurso : null,
   );
 }
 const temporal = compartirArchivo(
@@ -772,8 +810,10 @@ function comentar(usuario, nombreArchivo, texto, cuando) {
     "comentar",
     `Comentó en el archivo «${nombreArchivo}»`,
     cuando,
+    documento,
   );
 }
+
 comentar(
   maria,
   "contrato_marco_proveedores.txt",
@@ -846,16 +886,17 @@ comentar(
   "Hay un acuerdo repetido en el punto 4.",
   ISODate("2026-07-02T09:30:00Z"),
 );
-
 function descargar(usuario, nombreArchivo, cuando) {
-  archivo(nombreArchivo);
+  const documento = archivo(nombreArchivo);
   registrar(
     usuario,
     "descargar",
     `Descargó el archivo «${nombreArchivo}»`,
     cuando,
+    documento,
   );
 }
+
 descargar(
   ana,
   "contrato_marco_proveedores.txt",
@@ -903,11 +944,19 @@ descargar(
   "contrato_marco_proveedores.txt",
   ISODate("2026-07-01T16:30:00Z"),
 );
-
 function renombrar(nombreActual, nombreNuevo, cuando) {
   const documento = archivo(nombreActual);
   const dueño = dueñoDe(documento.propietario_id);
+  const extension = nombreNuevo.split(".").pop();
+  const tipo_mime = extension === "md" ? "text/markdown" : "text/plain";
+  const contenido = contenidoDe(nombreNuevo, dueño, extension);
   documento.nombre = nombreNuevo;
+  documento.detalles = {
+    extension,
+    tipo_mime,
+    tamano_bytes: tamañoEnBytes(contenido),
+  };
+  documento.contenido = contenido;
   documento.modificado_por = dueño._id;
   documento.updatedAt = cuando;
   registrar(
@@ -915,8 +964,10 @@ function renombrar(nombreActual, nombreNuevo, cuando) {
     "renombrar",
     `Renombró el archivo «${nombreActual}» a «${nombreNuevo}»`,
     cuando,
+    documento,
   );
 }
+
 renombrar(
   "directorio_proveedores.md",
   "directorio_proveedores_2026.md",
@@ -932,6 +983,7 @@ function moverArchivo(nombre, destino, cuando) {
   const documento = archivo(nombre);
   const dueño = dueñoDe(documento.propietario_id);
   const origen = carpetaPorId(documento.carpeta_id);
+  const origenNombre = origen ? origen.nombre : "la raíz";
   documento.carpeta_id = destino._id;
   documento.ancestros = [...destino.ancestros, destino._id];
   documento.modificado_por = dueño._id;
@@ -939,10 +991,12 @@ function moverArchivo(nombre, destino, cuando) {
   registrar(
     dueño,
     "mover",
-    `Movió el archivo «${nombre}» de la carpeta «${origen.nombre}» a la carpeta «${destino.nombre}»`,
+    `Movió el archivo «${nombre}» de «${origenNombre}» a la carpeta «${destino.nombre}»`,
     cuando,
+    documento,
   );
 }
+
 moverArchivo(
   "requerimientos_alpha.txt",
   documentacion,
@@ -953,11 +1007,11 @@ moverArchivo(
   f2026,
   ISODate("2026-10-01T14:00:00Z"),
 );
-
 function archivoAPapelera(nombre, cuando) {
   const documento = archivo(nombre);
   const dueño = dueñoDe(documento.propietario_id);
   documento.fecha_eliminacion = cuando;
+  documento.eliminado_individual = true;
   documento.modificado_por = dueño._id;
   documento.updatedAt = cuando;
   registrar(
@@ -965,6 +1019,7 @@ function archivoAPapelera(nombre, cuando) {
     "eliminar",
     `Envió a la papelera el archivo «${nombre}»`,
     cuando,
+    documento,
   );
 }
 
@@ -972,6 +1027,7 @@ function restaurarArchivo(nombre, cuando) {
   const documento = archivo(nombre);
   const dueño = dueñoDe(documento.propietario_id);
   documento.fecha_eliminacion = null;
+  documento.eliminado_individual = false;
   documento.modificado_por = dueño._id;
   documento.updatedAt = cuando;
   registrar(
@@ -979,6 +1035,7 @@ function restaurarArchivo(nombre, cuando) {
     "restaurar",
     `Restauró el archivo «${nombre}» desde la papelera`,
     cuando,
+    documento,
   );
 }
 
@@ -986,13 +1043,19 @@ function carpetaAPapelera(raiz, cuando) {
   const dueño = dueñoDe(raiz.propietario_id);
   const subarbol = carpetas.filter(
     (c) =>
-      mismoId(c._id, raiz._id) || c.ancestros.some((a) => mismoId(a, raiz._id)),
+      (mismoId(c._id, raiz._id) ||
+        c.ancestros.some((a) => mismoId(a, raiz._id))) &&
+      c.fecha_eliminacion === null,
   );
+  const subcarpetas = subarbol.filter((c) => !mismoId(c._id, raiz._id));
+
   subarbol.forEach((c) => {
     c.fecha_eliminacion = cuando;
+    c.eliminado_individual = mismoId(c._id, raiz._id);
     c.modificado_por = dueño._id;
     c.updatedAt = cuando;
   });
+
   const archivos = documentos.filter(
     (d) =>
       d.ancestros.some((a) => mismoId(a, raiz._id)) &&
@@ -1000,13 +1063,22 @@ function carpetaAPapelera(raiz, cuando) {
   );
   archivos.forEach((d) => {
     d.fecha_eliminacion = cuando;
+    d.eliminado_individual = false;
     d.modificado_por = dueño._id;
     d.updatedAt = cuando;
+    registrarEnArchivo(
+      dueño,
+      d,
+      "eliminar",
+      `Envió a la papelera el archivo «${d.nombre}» al eliminar la carpeta «${raiz.nombre}»`,
+      cuando,
+    );
   });
+
   registrar(
     dueño,
     "eliminar",
-    `Envió a la papelera la carpeta «${raiz.nombre}» (${archivos.length} archivos y ${subarbol.length - 1} subcarpetas)`,
+    `Envió a la papelera la carpeta «${raiz.nombre}» (${archivos.length} archivos y ${subcarpetas.length} subcarpetas)`,
     cuando,
   );
 }
@@ -1026,7 +1098,6 @@ carpetaAPapelera(beta, ISODate("2026-10-08T09:00:00Z"));
 carpetaAPapelera(f2025, ISODate("2026-10-10T10:30:00Z"));
 archivoAPapelera("politica_gastos_viaje.txt", ISODate("2026-09-20T10:00:00Z"));
 restaurarArchivo("politica_gastos_viaje.txt", ISODate("2026-09-21T09:00:00Z"));
-
 registrar(
   luis,
   "subir",
@@ -1045,8 +1116,8 @@ registrar(
   "Eliminó definitivamente el archivo «borrador_descartado.txt»",
   ISODate("2026-08-04T15:30:00Z"),
 );
-
 historial.sort((a, b) => a.createdAt - b.createdAt);
+historialArchivo.sort((a, b) => a.createdAt - b.createdAt);
 
 bd.usuario.insertMany(usuarios);
 bd.carpeta.insertMany(carpetas);
@@ -1054,7 +1125,7 @@ bd.documento.insertMany(documentos);
 bd.documento_compartido.insertMany(compartidos);
 bd.comentario.insertMany(comentarios);
 bd.historial.insertMany(historial);
-
+bd.historial_archivo.insertMany(historialArchivo);
 print("\nCarga inicial completada:");
 [
   "usuario",
@@ -1063,12 +1134,20 @@ print("\nCarga inicial completada:");
   "documento_compartido",
   "comentario",
   "historial",
+  "historial_archivo",
 ].forEach((nombre) => {
   print(`  ${nombre.padEnd(22)} ${bd.getCollection(nombre).countDocuments()}`);
 });
+
 print(
   `  archivos en papelera   ${bd.documento.countDocuments({ fecha_eliminacion: { $ne: null } })}`,
 );
 print(
   `  carpetas en papelera   ${bd.carpeta.countDocuments({ fecha_eliminacion: { $ne: null } })}`,
+);
+print(
+  `  eliminados individual  ${bd.documento.countDocuments({ eliminado_individual: true })} archivos, ${bd.carpeta.countDocuments({ eliminado_individual: true })} carpetas`,
+);
+print(
+  `  papelera por cascada   ${bd.documento.countDocuments({ fecha_eliminacion: { $ne: null }, eliminado_individual: false })} archivos, ${bd.carpeta.countDocuments({ fecha_eliminacion: { $ne: null }, eliminado_individual: false })} carpetas`,
 );

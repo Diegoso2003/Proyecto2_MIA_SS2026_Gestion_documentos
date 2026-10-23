@@ -7,6 +7,7 @@ const colecciones = [
   "documento_compartido",
   "comentario",
   "historial",
+  "histarial_archivo",
   "documento_destacado",
 ];
 

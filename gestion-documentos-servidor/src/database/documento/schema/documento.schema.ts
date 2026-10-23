@@ -5,23 +5,6 @@ import { Carpeta } from '../../carpeta/schema/carpeta.schema.js';
 
 export type DocumentoDocument = HydratedDocument<Documento>;
 
-@Schema({ _id: false })
-export class DetallesDocumento {
-  @Prop({
-    required: true,
-    enum: ['txt', 'md'],
-  })
-  extension: string;
-
-  @Prop({
-    required: true,
-  })
-  tipo_mime: string;
-}
-
-export const DetallesDocumentoSchema =
-  SchemaFactory.createForClass(DetallesDocumento);
-
 @Schema({ timestamps: true, collection: 'documento' })
 export class Documento {
   @Prop({
@@ -52,13 +35,24 @@ export class Documento {
   carpeta_id: Types.ObjectId | null;
 
   @Prop({
-    type: DetallesDocumentoSchema,
     required: true,
+    enum: ['txt', 'md'],
   })
-  detalles: DetallesDocumento;
+  extension: string;
 
   @Prop({
     required: true,
+  })
+  tipo_mime: string;
+
+  @Prop({
+    required: true,
+  })
+  tamano_bytes: number;
+
+  @Prop({
+    required: true,
+    select: false,
   })
   contenido: string;
 
@@ -68,7 +62,11 @@ export class Documento {
   })
   fecha_eliminacion: Date | null;
 
-  @Prop({ type: [Types.ObjectId], ref: Carpeta.name, default: [] })
+  @Prop({
+    type: [Types.ObjectId],
+    ref: Carpeta.name,
+    default: [],
+  })
   ancestros: Types.ObjectId[];
 }
 
