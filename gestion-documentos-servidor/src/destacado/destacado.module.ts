@@ -1,20 +1,11 @@
 import { Module } from '@nestjs/common';
 import { DestacadoService } from './destacado.service.js';
 import { DestacadoController } from './destacado.controller.js';
-import { MongooseModule } from '@nestjs/mongoose';
-import {
-  DocumentoCompartido,
-  DocumentoCompartidoSchema,
-} from '../compartido/schema/compartido.schema.js';
+import { DatabaseModule } from '../database/database.module.js';
 
 @Module({
-  imports: [
-    MongooseModule.forFeature([
-      { name: DocumentoCompartido.name, schema: DocumentoCompartidoSchema },
-    ]),
-  ],
+  imports: [DatabaseModule],
   controllers: [DestacadoController],
   providers: [DestacadoService],
-  exports: [MongooseModule],
 })
 export class DestacadoModule {}

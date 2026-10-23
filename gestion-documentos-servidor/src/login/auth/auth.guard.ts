@@ -9,22 +9,16 @@ import { IS_PUBLIC_KEY } from '../../decorators/public/public.decorator.js';
 import { JwtService } from '@nestjs/jwt';
 import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
-import { InjectModel } from '@nestjs/mongoose';
-import {
-  Usuario,
-  UsuarioDocument,
-} from '../../usuario/schema/usuario.schema.js';
-import { Model } from 'mongoose';
 import { ROLES_KEY } from '../../decorators/roles/roles.decorator.js';
 import { Rol } from '../../usuario/Rol.js';
+import { UsuarioRepositoryService } from '../../database/usuario/usuario-repository/usuario-repository.service.js';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
   constructor(
     private readonly jwtService: JwtService,
     private reflector: Reflector,
-    @InjectModel(Usuario.name)
-    private readonly usuarioModel: Model<UsuarioDocument>,
+    private readonly usuarioRepository: UsuarioRepositoryService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -47,7 +41,7 @@ export class AuthGuard implements CanActivate {
     } catch {
       throw new UnauthorizedException('iniciar sesion');
     }
-    const usuario = await this.usuarioModel.findById(payload.id);
+    const usuario = await this.usuarioRepository.buscarPorId(payload.id);
     if (!usuario) throw new UnauthorizedException('Usuario no encontrado');
     if (!usuario.activo)
       throw new ForbiddenException(

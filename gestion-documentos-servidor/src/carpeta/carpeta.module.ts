@@ -1,15 +1,11 @@
 import { Module } from '@nestjs/common';
 import { CarpetaService } from './carpeta.service.js';
 import { CarpetaController } from './carpeta.controller.js';
-import { MongooseModule } from '@nestjs/mongoose';
-import { Carpeta, CarpetaSchema } from './schema/carpeta.schema.js';
+import { DatabaseModule } from '../database/database.module.js';
 
 @Module({
-  imports: [
-    MongooseModule.forFeature([{ name: Carpeta.name, schema: CarpetaSchema }]),
-  ],
+  imports: [DatabaseModule],
   controllers: [CarpetaController],
   providers: [CarpetaService],
-  exports: [MongooseModule],
 })
 export class CarpetaModule {}

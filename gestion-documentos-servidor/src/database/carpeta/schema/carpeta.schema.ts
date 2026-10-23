@@ -40,6 +40,7 @@ export class Carpeta {
   ancestros: Types.ObjectId[];
 
   @Prop({
+    type: Date,
     default: null,
   })
   fecha_eliminacion: Date | null;

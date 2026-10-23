@@ -64,6 +64,7 @@ export class Documento {
 
   @Prop({
     default: null,
+    type: Date,
   })
   fecha_eliminacion: Date | null;
 

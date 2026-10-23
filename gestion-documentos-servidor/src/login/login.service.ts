@@ -1,24 +1,20 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { EncriptadorService } from '../seguridad/encriptador/encriptador.service.js';
 import { LoginDto } from './dto/login.dto.js';
-import { InjectModel } from '@nestjs/mongoose';
-import { Usuario, UsuarioDocument } from '../usuario/schema/usuario.schema.js';
-import { Model } from 'mongoose';
 import { JwtService } from '@nestjs/jwt';
+import { UsuarioRepositoryService } from '../database/usuario/usuario-repository/usuario-repository.service.js';
+import { UsuarioDocument } from '../database/usuario/schema/usuario.schema.js';
 
 @Injectable()
 export class LoginService {
   constructor(
     private readonly encriptadorService: EncriptadorService,
     private readonly jwtService: JwtService,
-    @InjectModel(Usuario.name)
-    private readonly usuarioModel: Model<UsuarioDocument>,
+    private readonly usuarioRepository: UsuarioRepositoryService,
   ) {}
 
   async iniciarSesion(login: LoginDto) {
-    const usuario: UsuarioDocument | null = await this.usuarioModel
-      .findOne({ correo: login.correo })
-      .select('+contraseña_hash');
+    const usuario = await this.usuarioRepository.buscarPorCorreo(login.correo);
     if (!usuario) {
       throw new BadRequestException('correo o contraseña incorrectos');
     }

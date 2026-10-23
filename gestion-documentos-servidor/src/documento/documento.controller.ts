@@ -11,8 +11,7 @@ import { DocumentoService } from './documento.service.js';
 import { CreateDocumentoDto } from './dto/create-documento.dto.js';
 import { UpdateDocumentoDto } from './dto/update-documento.dto.js';
 import { GetUsuario } from '../decorators/get-usuario/get-usuario.decorator.js';
-import type { UsuarioDocument } from '../usuario/schema/usuario.schema.js';
-import { RutaCarpetaPadre } from '../carpeta/dto/ruta-carpeta-padre.dto.js';
+import type { UsuarioDocument } from '../database/usuario/schema/usuario.schema.js';
 
 @Controller('documento')
 export class DocumentoController {
@@ -24,8 +23,8 @@ export class DocumentoController {
   }
 
   @Get()
-  findAll(@GetUsuario() usuario: UsuarioDocument, padre: RutaCarpetaPadre) {
-    return this.documentoService.findAll(usuario, padre);
+  findAll(@GetUsuario() usuario: UsuarioDocument) {
+    return this.documentoService.findAll(usuario);
   }
 
   @Get(':id')

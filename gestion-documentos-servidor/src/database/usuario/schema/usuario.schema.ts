@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Rol } from '../Rol.js';
 import { HydratedDocument } from 'mongoose';
+import { Rol } from '../../../usuario/Rol.js';
 
 @Schema({ collection: 'usuario' })
 export class Usuario {
