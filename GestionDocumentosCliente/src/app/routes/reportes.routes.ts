@@ -22,6 +22,14 @@ export const REPORTES_ROUTES: Routes = [
           ),
       },
       {
+        path: 'archivos-operaciones',
+        title: 'archivos-operaciones',
+        loadComponent: () =>
+          import('../components/reportes/archivos-mas-operaciones/archivos-mas-operaciones').then(
+            (m) => m.ArchivosMasOperaciones,
+          ),
+      },
+      {
         path: '',
         pathMatch: 'full',
         redirectTo: 'archivos-tipo',

@@ -23,6 +23,10 @@ import {
 import { CompartidoRepositoryService } from './compartido/compartido-repository/compartido-repository.service.js';
 import { DocumentoRepositoryService } from './documento/documento-repository/documento-repository.service.js';
 import { ComentarioRepositoryService } from './comentario/comentario-repository/comentario-repository.service.js';
+import {
+  HistorialArchivo,
+  HistorialArchivoSchema,
+} from './historial-archivo/schema/historial-archivo.schema.js';
 
 @Module({
   imports: [
@@ -36,6 +40,7 @@ import { ComentarioRepositoryService } from './comentario/comentario-repository/
       { name: Documento.name, schema: DocumentoSchema },
       { name: Destacado.name, schema: DestacadoSchema },
       { name: DocumentoCompartido.name, schema: DocumentoCompartidoSchema },
+      { name: HistorialArchivo.name, schema: HistorialArchivoSchema },
     ]),
   ],
   providers: [

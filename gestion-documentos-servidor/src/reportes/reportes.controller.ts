@@ -5,6 +5,8 @@ import { Rol } from '../usuario/Rol.js';
 import { Roles } from '../decorators/roles/roles.decorator.js';
 import { PorRangoFechasService } from './por-rango-fechas/por-rango-fechas.service.js';
 import { ArchivosPorRangoDto } from './dto/archivos-por-rango.dto.js';
+import { ReporteMasOperacionesService } from './reporte-mas-operaciones/reporte-mas-operaciones.service.js';
+import { ArchivosMasOperacionesDto } from './dto/archivos-mas-operaciones.dto.js';
 
 @Roles(Rol.ADMIN)
 @Controller('reportes')
@@ -12,6 +14,7 @@ export class ReportesController {
   constructor(
     private readonly archivosPorTipoService: ArchivosPorTipoService,
     private readonly archivosPorFecha: PorRangoFechasService,
+    private readonly archivosMasOperaciones: ReporteMasOperacionesService,
   ) {}
   @Get('archivos/por-tipo')
   async archivosPorTipo(@Query() q: ArchivosPorTipoDto) {
@@ -19,7 +22,11 @@ export class ReportesController {
   }
 
   @Get('archivos/por-rango-fechas')
-  archivosPorRango(@Query() q: ArchivosPorRangoDto) {
-    return this.archivosPorFecha.archivosPorRangoFechas(q);
+  async archivosPorRango(@Query() q: ArchivosPorRangoDto) {
+    return await this.archivosPorFecha.archivosPorRangoFechas(q);
+  }
+  @Get('archivos/mas-operaciones')
+  async archivosMasOpera(@Query() q: ArchivosMasOperacionesDto) {
+    return await this.archivosMasOperaciones.archivosMasOperaciones(q);
   }
 }

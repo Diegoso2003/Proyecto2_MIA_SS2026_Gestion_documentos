@@ -4,6 +4,7 @@ import { API_URL } from '../util/api-url';
 import { Observable } from 'rxjs';
 import { ReporteArchivosPorTipo } from '../models/reportes/reporte-response';
 import { ReporteArchivosPorRango } from '../models/reportes/reporte-rango-fecha';
+import { ReporteArchivosMasOperaciones } from '../models/reportes/archivos-mas-operaciones';
 
 @Injectable({
   providedIn: 'root',
@@ -22,6 +23,14 @@ export class ReporteService {
     params: Record<string, string | number>,
   ): Observable<ReporteArchivosPorRango> {
     return this._http.get<ReporteArchivosPorRango>(`${this.url}/archivos/por-rango-fechas`, {
+      params: new HttpParams({ fromObject: params }),
+    });
+  }
+
+  archivosMasOperaciones(
+    params: Record<string, string | number>,
+  ): Observable<ReporteArchivosMasOperaciones> {
+    return this._http.get<ReporteArchivosMasOperaciones>(`${this.url}/archivos/mas-operaciones`, {
       params: new HttpParams({ fromObject: params }),
     });
   }
