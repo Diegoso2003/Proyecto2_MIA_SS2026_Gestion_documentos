@@ -92,7 +92,12 @@
 .vista {
   padding: 24px;
 }
-
+/* ---------- Contenido ---------- */
+.contenido {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
 @media (max-width: 600px) {
   .titulo {
     display: none;

@@ -1,0 +1,65 @@
+<div class="flex items-center p-2">
+  <span class="flex-1 font-medium pl-2">Comentarios</span>
+  <button mat-icon-button (click)="cerrar.emit()" matTooltip="Cerrar">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+
+@if (comentariosResource.isLoading()) {
+  <mat-progress-bar mode="indeterminate" />
+}
+
+<div class="flex-1 overflow-auto px-3">
+  @for (c of comentariosResource.value(); track c._id) {
+    <div class="py-3 border-b">
+      <div class="flex items-center text-sm">
+        <span class="font-medium flex-1">{{ c.usuario_id.correo }}</span>
+        @if (c.usuario_id._id === miId && editandoId() !== c._id) {
+          <button mat-icon-button (click)="iniciarEdicion(c)" matTooltip="Editar">
+            <mat-icon>edit</mat-icon>
+          </button>
+        }
+      </div>
+      <div class="text-xs opacity-60 mb-1">
+        {{ c.createdAt | date: 'short' }}
+        @if (c.updatedAt !== c.createdAt) {
+          · editado
+        }
+      </div>
+
+      @if (editandoId() === c._id) {
+        <mat-form-field class="w-full">
+          <textarea matInput rows="3" [formControl]="textoEdicion"></textarea>
+        </mat-form-field>
+        <div class="flex justify-end gap-2">
+          <button mat-button (click)="cancelarEdicion()">Cancelar</button>
+          <button mat-flat-button (click)="guardarEdicion(c)" [disabled]="textoEdicion.invalid">
+            Guardar
+          </button>
+        </div>
+      } @else {
+        <p class="whitespace-pre-wrap">{{ c.texto }}</p>
+      }
+    </div>
+  } @empty {
+    @if (!comentariosResource.isLoading()) {
+      <p class="text-center opacity-60 py-6">Aún no hay comentarios</p>
+    }
+  }
+</div>
+
+<div class="p-3">
+  <mat-form-field class="w-full">
+    <mat-label>Escribe un comentario</mat-label>
+    <textarea matInput rows="3" [formControl]="nuevoComentario"></textarea>
+  </mat-form-field>
+  <button
+    mat-flat-button
+    class="w-full"
+    (click)="enviar()"
+    [disabled]="!puedeComentar() || nuevoComentario.invalid"
+  >
+    <mat-icon>send</mat-icon>
+    Comentar
+  </button>
+</div>

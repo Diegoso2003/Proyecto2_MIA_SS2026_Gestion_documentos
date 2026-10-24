@@ -7,5 +7,6 @@ import { DatabaseModule } from '../database/database.module.js';
   imports: [DatabaseModule],
   controllers: [DocumentoController],
   providers: [DocumentoService],
+  exports: [DocumentoService],
 })
 export class DocumentoModule {}

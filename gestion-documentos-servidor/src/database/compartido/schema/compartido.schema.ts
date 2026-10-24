@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
 import { Usuario } from '../../usuario/schema/usuario.schema.js';
+import { Permiso } from '../../../compartido/dto/permiso.js';
 
 export type DocumentoCompartidoDocument = HydratedDocument<DocumentoCompartido>;
 
@@ -35,9 +36,9 @@ export class DocumentoCompartido {
 
   @Prop({
     required: true,
-    enum: ['lectura', 'edicion', 'comentar'],
+    enum: Permiso,
   })
-  permiso: string;
+  permiso: Permiso;
 }
 
 export const DocumentoCompartidoSchema =

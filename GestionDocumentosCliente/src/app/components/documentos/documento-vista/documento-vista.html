@@ -1,0 +1,62 @@
+<div class="flex flex-col h-full w-full overflow-hidden bg-[#1e1e1e]">
+  <mat-toolbar class="shrink-0">
+    <button mat-icon-button (click)="volver()" matTooltip="Volver">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+
+    @if (documento(); as doc) {
+      <span class="ml-2">{{ doc.nombre }}</span>
+      <span class="ml-2 text-sm opacity-60">.{{ doc.extension }}</span>
+    }
+
+    <span class="flex-1"></span>
+
+    @if (hayCambios()) {
+      <span class="text-xs opacity-70 mr-3">Cambios sin guardar</span>
+    }
+
+    <button
+      mat-flat-button
+      (click)="guardar()"
+      [disabled]="!puedeEditar() || !hayCambios() || guardando()"
+    >
+      <mat-icon>save</mat-icon>
+      Guardar
+    </button>
+
+    <button mat-button class="ml-2" (click)="sidebarAbierto.set(!sidebarAbierto())">
+      <mat-icon>comment</mat-icon>
+      Comentarios
+    </button>
+  </mat-toolbar>
+
+  @if (documentoResource.isLoading() || guardando()) {
+    <mat-progress-bar mode="indeterminate" class="shrink-0" />
+  }
+
+  <mat-sidenav-container class="flex-1 min-h-0 overflow-hidden">
+    <mat-sidenav
+      position="end"
+      mode="side"
+      class="w-96"
+      [opened]="sidebarAbierto()"
+      (closedStart)="sidebarAbierto.set(false)"
+    >
+      @if (sidebarAbierto()) {
+        <app-sidebar-comentarios
+          [documentoId]="id()"
+          [puedeComentar]="puedeComentar()"
+          (cerrar)="sidebarAbierto.set(false)"
+        />
+      }
+    </mat-sidenav>
+
+    <mat-sidenav-content class="h-full overflow-hidden bg-[#1e1e1e]">
+      @if (documento()) {
+        <div class="flex flex-col w-full max-w-5xl mx-auto h-full">
+          <app-documento-editor [(contenido)]="contenido" [soloLectura]="!puedeEditar()" />
+        </div>
+      }
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+</div>

@@ -12,6 +12,10 @@ export class DocumentoRepositoryService {
     private readonly documentoModel: Model<DocumentoDocument>,
   ) {}
 
+  async obtenerPorId(id: string) {
+    return this.documentoModel.findById(id).select('+contenido');
+  }
+
   async obtenerDocumentosRaiz(usuario: UsuarioDocument) {
     return this.documentoModel.find({
       propietario_id: usuario._id,

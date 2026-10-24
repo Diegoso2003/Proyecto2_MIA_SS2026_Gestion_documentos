@@ -60,6 +60,16 @@ export class CompartidoRepositoryService {
     ]);
   }
 
+  async obtenerPermisoPorRecurso(
+    recurso: Types.ObjectId,
+    usuario: UsuarioDocument,
+  ) {
+    return this.documentoCompartidoModel.findOne({
+      recurso_id: recurso,
+      usuario_destino_id: usuario._id,
+    });
+  }
+
   async obtenerPermiso(ancestros: Types.ObjectId[], usuario: UsuarioDocument) {
     const recursoCompartido = await this.documentoCompartidoModel.findOne({
       recurso_id: { $in: ancestros },

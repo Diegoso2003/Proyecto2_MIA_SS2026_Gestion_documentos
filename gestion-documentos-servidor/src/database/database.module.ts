@@ -22,6 +22,7 @@ import {
 } from './compartido/schema/compartido.schema.js';
 import { CompartidoRepositoryService } from './compartido/compartido-repository/compartido-repository.service.js';
 import { DocumentoRepositoryService } from './documento/documento-repository/documento-repository.service.js';
+import { ComentarioRepositoryService } from './comentario/comentario-repository/comentario-repository.service.js';
 
 @Module({
   imports: [
@@ -42,12 +43,14 @@ import { DocumentoRepositoryService } from './documento/documento-repository/doc
     CompartidoRepositoryService,
     DocumentoRepositoryService,
     UsuarioRepositoryService,
+    ComentarioRepositoryService,
   ],
   exports: [
     CarpetaRepositoryService,
     CompartidoRepositoryService,
     DocumentoRepositoryService,
     UsuarioRepositoryService,
+    ComentarioRepositoryService,
   ],
 })
 export class DatabaseModule {}

@@ -12,6 +12,7 @@ import { CreateDocumentoDto } from './dto/create-documento.dto.js';
 import { UpdateDocumentoDto } from './dto/update-documento.dto.js';
 import { GetUsuario } from '../decorators/get-usuario/get-usuario.decorator.js';
 import type { UsuarioDocument } from '../database/usuario/schema/usuario.schema.js';
+import { DocumentoVistaModel } from './dto/documento-request.dto.js';
 
 @Controller('documento')
 export class DocumentoController {
@@ -28,8 +29,11 @@ export class DocumentoController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.documentoService.findOne(+id);
+  async findOne(
+    @GetUsuario() usuario: UsuarioDocument,
+    @Param('id') id: string,
+  ): Promise<DocumentoVistaModel> {
+    return await this.documentoService.findOne(usuario, id);
   }
 
   @Patch(':id')

@@ -41,6 +41,14 @@ export const SIDE_VAR_ROUTES: Routes = [
           import('../components/documentos/compartidos/compartidos').then((m) => m.Compartidos),
       },
       {
+        path: 'documento/:id',
+        title: 'Documento',
+        loadComponent: () =>
+          import('../components/documentos/documento-vista/documento-vista').then(
+            (m) => m.DocumentoVista,
+          ),
+      },
+      {
         path: 'usuarios',
         title: 'Usuarios',
         canMatch: [AdminGuard],
