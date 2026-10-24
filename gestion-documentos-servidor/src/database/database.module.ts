@@ -51,6 +51,7 @@ import { ComentarioRepositoryService } from './comentario/comentario-repository/
     DocumentoRepositoryService,
     UsuarioRepositoryService,
     ComentarioRepositoryService,
+    MongooseModule,
   ],
 })
 export class DatabaseModule {}

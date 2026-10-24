@@ -16,6 +16,7 @@ import { ComentarioModule } from './comentario/comentario.module.js';
 import { DocumentoModule } from './documento/documento.module.js';
 import { DatabaseModule } from './database/database.module.js';
 import { PapeleraModule } from './papelera/papelera.module.js';
+import { ReportesModule } from './reportes/reportes.module.js';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { PapeleraModule } from './papelera/papelera.module.js';
     DocumentoModule,
     DatabaseModule,
     PapeleraModule,
+    ReportesModule,
   ],
   controllers: [AppController],
   providers: [

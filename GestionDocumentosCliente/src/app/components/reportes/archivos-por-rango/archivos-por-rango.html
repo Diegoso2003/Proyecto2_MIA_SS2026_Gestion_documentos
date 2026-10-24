@@ -1,0 +1,106 @@
+<div class="max-w-5xl mx-auto p-6">
+  <h1 class="text-2xl font-semibold mb-4">Archivos por rango de fechas</h1>
+  <p class="text-gray-600 mb-4">Archivos almacenados según su fecha de creación.</p>
+
+  <form
+    [formGroup]="form"
+    (ngSubmit)="consultar(0)"
+    class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6"
+  >
+    <mat-form-field appearance="outline">
+      <mat-label>Desde</mat-label>
+      <input matInput type="date" formControlName="desde" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Hasta</mat-label>
+      <input matInput type="date" formControlName="hasta" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Extensión</mat-label>
+      <mat-select formControlName="extension">
+        <mat-option value="">Todas</mat-option>
+        <mat-option value="txt">txt</mat-option>
+        <mat-option value="md">md</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Propietario</mat-label>
+      <mat-select formControlName="propietarioId">
+        <mat-option value="">Todos</mat-option>
+        @for (u of usuarios(); track u._id) {
+          <mat-option [value]="u._id">{{ u.nombre }} ({{ u.correo }})</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <div class="md:col-span-4 flex gap-2">
+      <button mat-flat-button color="primary" type="submit" [disabled]="cargando()">
+        Consultar
+      </button>
+      <button mat-stroked-button type="button" (click)="limpiar()">Limpiar</button>
+    </div>
+  </form>
+
+  @if (cargando()) {
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  }
+
+  @if (respuesta(); as r) {
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+      @for (item of r.resumen; track item.etiqueta) {
+        <mat-card appearance="outlined">
+          <mat-card-content>
+            <div class="text-sm text-gray-500">{{ item.etiqueta }}</div>
+            <div class="text-2xl font-medium mt-1">{{ item.valor }}</div>
+          </mat-card-content>
+        </mat-card>
+      }
+    </div>
+
+    @if (r.datos.length) {
+      <table mat-table [dataSource]="r.datos" class="w-full">
+        <ng-container matColumnDef="nombre">
+          <th mat-header-cell *matHeaderCellDef>Nombre</th>
+          <td mat-cell *matCellDef="let fila">{{ fila.nombre }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="extension">
+          <th mat-header-cell *matHeaderCellDef>Extensión</th>
+          <td mat-cell *matCellDef="let fila">{{ fila.extension }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="tamano_bytes">
+          <th mat-header-cell *matHeaderCellDef>Tamaño</th>
+          <td mat-cell *matCellDef="let fila">{{ formatearBytes(fila.tamano_bytes) }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="propietario">
+          <th mat-header-cell *matHeaderCellDef>Propietario</th>
+          <td mat-cell *matCellDef="let fila">{{ fila.propietario }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="createdAt">
+          <th mat-header-cell *matHeaderCellDef>Creado</th>
+          <td mat-cell *matCellDef="let fila">{{ formatearFecha(fila.createdAt) }}</td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="columnas"></tr>
+        <tr mat-row *matRowDef="let fila; columns: columnas"></tr>
+      </table>
+
+      <mat-paginator
+        [length]="r.paginacion.total"
+        [pageSize]="r.paginacion.limit"
+        [pageIndex]="r.paginacion.page - 1"
+        [pageSizeOptions]="[10, 20, 50, 100]"
+        (page)="cambiarPagina($event)"
+      >
+      </mat-paginator>
+    } @else {
+      <p class="text-gray-500 text-center py-8">No hay resultados con los filtros aplicados.</p>
+    }
+  }
+</div>

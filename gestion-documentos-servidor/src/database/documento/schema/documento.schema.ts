@@ -7,6 +7,8 @@ export type DocumentoDocument = HydratedDocument<Documento>;
 
 @Schema({ timestamps: true, collection: 'documento' })
 export class Documento {
+  createdAt?: Date;
+  updatedAt?: Date;
   @Prop({
     required: true,
     trim: true,

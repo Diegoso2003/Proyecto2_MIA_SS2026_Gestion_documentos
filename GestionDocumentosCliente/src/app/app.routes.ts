@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { AuthGuard } from './guards/auth-guard';
 import { UsuarioGuard } from './guards/usuario-guard';
+import { AdminGuard } from './guards/admin-guard';
 
 export const routes: Routes = [
   {
@@ -14,6 +15,11 @@ export const routes: Routes = [
     path: 'inicio',
     canMatch: [UsuarioGuard],
     loadChildren: () => import('./routes/side-var.routes').then((m) => m.SIDE_VAR_ROUTES),
+  },
+  {
+    path: 'reportes',
+    canMatch: [AdminGuard],
+    loadChildren: () => import('./routes/reportes.routes').then((m) => m.REPORTES_ROUTES),
   },
   {
     path: '',
