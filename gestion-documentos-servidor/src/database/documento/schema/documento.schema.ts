@@ -70,6 +70,11 @@ export class Documento {
     default: [],
   })
   ancestros: Types.ObjectId[];
+
+  @Prop({
+    default: false,
+  })
+  eliminado_individual: boolean;
 }
 
 export const DocumentoSchema = SchemaFactory.createForClass(Documento);

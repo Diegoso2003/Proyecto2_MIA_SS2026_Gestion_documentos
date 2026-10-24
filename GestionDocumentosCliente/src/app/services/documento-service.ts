@@ -18,4 +18,8 @@ export class DocumentoService {
   actualizarContenido(id: string, contenido: string): Observable<void> {
     return this._http.patch<void>(`${this.url}/${id}`, { contenido });
   }
+
+  mandarAPapelera(id: string): Observable<void> {
+    return this._http.delete<void>(`${this.url}/papelera/${id}`);
+  }
 }

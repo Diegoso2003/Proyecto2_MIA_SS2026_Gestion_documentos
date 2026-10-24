@@ -34,10 +34,49 @@ export class DocumentoRepositoryService {
   async obtenerDocumentosPapelera(usuario: UsuarioDocument) {
     return this.documentoModel
       .find({
-        propietario_id: usuario._id,
+        propietario_id: new Types.ObjectId(usuario._id),
         fecha_eliminacion: { $ne: null },
         eliminado_individual: true,
       })
       .populate<{ ancestros: DatosAncestro[] }>('ancestros', 'nombre');
+  }
+
+  async borrarArchivosEnCarpeta(fecha: Date, id: Types.ObjectId) {
+    await this.documentoModel.updateMany(
+      {
+        ancestros: id,
+        fecha_eliminacion: null,
+      },
+      { $set: { fecha_eliminacion: fecha, eliminado_individual: false } },
+    );
+  }
+
+  async existeDocumentoConNombreEnCarpeta(
+    carpetaId: string,
+    nombre: string,
+    usuarioId: Types.ObjectId,
+  ): Promise<boolean> {
+    const existente = await this.documentoModel.findOne({
+      carpeta_id: new Types.ObjectId(carpetaId),
+      propietario_id: usuarioId,
+      nombre,
+      fecha_eliminacion: null,
+    });
+
+    return existente !== null;
+  }
+
+  async existeDocumentoRaizConNombre(
+    nombre: string,
+    usuarioId: Types.ObjectId,
+  ): Promise<boolean> {
+    const existente = await this.documentoModel.findOne({
+      carpeta_id: null,
+      propietario_id: usuarioId,
+      nombre,
+      fecha_eliminacion: null,
+    });
+
+    return existente !== null;
   }
 }

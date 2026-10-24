@@ -40,8 +40,11 @@ export class CarpetaController {
     return this.carpetaService.update(+id, updateCarpetaDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.carpetaService.remove(+id);
+  @Delete('papelera/:id')
+  async remove(
+    @Param('id') id: string,
+    @GetUsuario() usuario: UsuarioDocument,
+  ) {
+    return await this.carpetaService.remove(id, usuario);
   }
 }

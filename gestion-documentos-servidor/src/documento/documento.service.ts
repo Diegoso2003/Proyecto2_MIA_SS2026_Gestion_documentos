@@ -65,7 +65,16 @@ export class DocumentoService {
     return `This action updates a #${id} documento`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} documento`;
+  async remove(id: string, usuario: UsuarioDocument) {
+    const documento = await this.documentoRepository.obtenerPorId(id);
+    if (!documento || documento.fecha_eliminacion !== null) {
+      throw new NotFoundException('no se encontro la carpeta');
+    }
+    if (documento.propietario_id.toString() !== usuario._id.toString()) {
+      throw new NotFoundException('no se encontro la carpeta');
+    }
+    documento.fecha_eliminacion = new Date();
+    documento.eliminado_individual = true;
+    documento.save();
   }
 }

@@ -50,7 +50,25 @@ export class CarpetaService {
     return `This action updates a #${id} carpeta`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} carpeta`;
+  async remove(id: string, usuario: UsuarioDocument) {
+    const carpeta = await this.carpetaRepasitory.obtenerPorId(id);
+    if (!carpeta) {
+      throw new NotFoundException('no se encontro la carpeta');
+    }
+    if (carpeta.propietario_id.toString() !== usuario._id.toString()) {
+      throw new NotFoundException('no se encrontro la carpeta');
+    }
+
+    carpeta.fecha_eliminacion = new Date();
+    carpeta.eliminado_individual = true;
+    carpeta.save();
+    this.documentoRepository.borrarArchivosEnCarpeta(
+      carpeta.fecha_eliminacion,
+      carpeta._id,
+    );
+    this.carpetaRepasitory.borrarSubcarpetas(
+      carpeta.fecha_eliminacion,
+      carpeta._id,
+    );
   }
 }

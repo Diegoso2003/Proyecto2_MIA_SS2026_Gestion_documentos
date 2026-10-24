@@ -1,4 +1,4 @@
-import { Component, input, output, signal } from '@angular/core';
+import { Component, inject, input, output, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
@@ -6,6 +6,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Documento } from '../../../models/documentos/vista_documento';
+import { DocumentoService } from '../../../services/documento-service';
+import { ErrorService } from '../../../util/services/error-service';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-documento-item',
@@ -18,8 +21,9 @@ export class DocumentoItem {
   permitirRenombrar = input<boolean>(true);
   permitirEliminar = input<boolean>(true);
   permitirCompartir = input<boolean>(true);
-  cambio = output<void>(); // el padre recarga la lista cuando se emite
-  // private _documentoService = inject(DocumentoService);
+  cambio = output<void>();
+  private _documentoService = inject(DocumentoService);
+  private _errorService = inject(ErrorService);
 
   detalles = signal<{
     tipo: string;
@@ -37,40 +41,39 @@ export class DocumentoItem {
   }
 
   descargar() {
-    // no recarga
     console.log('descargar documento', this.documento()._id);
-    // this._documentoService.descargar(this.documento()._id).subscribe(blob => { /* guardar blob */ });
   }
 
   compartir() {
     console.log('compartir documento', this.documento()._id);
-    // this._documentoService.compartir(this.documento()._id, /* datos */).subscribe(() => this.cambio.emit());
   }
 
   renombrar() {
     const nombre = prompt('Nuevo nombre', this.documento().nombre);
     if (!nombre || nombre === this.documento().nombre) return;
     console.log('renombrar documento', this.documento()._id, nombre);
-    // this._documentoService.renombrar(this.documento()._id, nombre).subscribe(() => this.cambio.emit());
   }
 
   destacar() {
     console.log('destacar documento', this.documento()._id);
-    // this._documentoService.destacar(this.documento()._id).subscribe(() => this.cambio.emit());
   }
 
   eliminar() {
-    if (!confirm(`¿Eliminar "${this.documento().nombre}"?`)) return;
-    console.log('eliminar documento', this.documento()._id);
-    // this._documentoService.eliminar(this.documento()._id).subscribe(() => this.cambio.emit());
+    this._documentoService.mandarAPapelera(this.documento()._id).subscribe({
+      next: () => {
+        this.cambio.emit();
+      },
+      error: (error: HttpErrorResponse) => {
+        const mensaje = error.error.message ?? 'error al mandar a papelera intente más tarde';
+        this._errorService.mostrarMensaje(mensaje);
+      },
+    });
   }
 
   cargarDetalles() {
-    // subconsulta, no recarga
     this.detalles.set(null);
     console.log('detalles documento', this.documento()._id);
-    // this._documentoService.obtenerDetalles(this.documento()._id).subscribe(d => this.detalles.set(d));
-    const d = this.documento(); // datos de ejemplo, reemplazar por la subconsulta
+    const d = this.documento();
     this.detalles.set({
       tipo: d.mime_type,
       propietario: d.propietario_id,

@@ -1,4 +1,4 @@
-import { Component, input, output, signal } from '@angular/core';
+import { Component, inject, input, output, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
@@ -7,6 +7,9 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Carpeta } from '../../../models/documentos/vista_documento';
 import { formatTamano } from '../../../util/format';
+import { CarpetaService } from '../../../services/carpeta-service';
+import { ErrorService } from '../../../util/services/error-service';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-carpeta-item',
@@ -21,45 +24,45 @@ export class CarpetaItem {
   permitirCompartir = input<boolean>(true);
   carpetaCompartida = input<boolean>(false);
   cambio = output<void>(); // el padre recarga la lista cuando se emite
-  // private _carpetaService = inject(CarpetaService);
+  private _carpetaService = inject(CarpetaService);
+  private _errorService = inject(ErrorService);
 
   detalles = signal<{ propietario: string; creado: string; ubicacion: string } | null>(null);
 
   descargar() {
-    // no recarga
     console.log('descargar carpeta', this.carpeta()._id);
-    // this._carpetaService.descargar(this.carpeta()._id).subscribe(blob => { /* guardar blob */ });
   }
 
   compartir() {
     console.log('compartir carpeta', this.carpeta()._id);
-    // this._carpetaService.compartir(this.carpeta()._id, /* datos */).subscribe(() => this.cambio.emit());
   }
 
   renombrar() {
     const nombre = prompt('Nuevo nombre', this.carpeta().nombre);
     if (!nombre || nombre === this.carpeta().nombre) return;
     console.log('renombrar carpeta', this.carpeta()._id, nombre);
-    // this._carpetaService.renombrar(this.carpeta()._id, nombre).subscribe(() => this.cambio.emit());
   }
 
   destacar() {
     console.log('destacar carpeta', this.carpeta()._id);
-    // this._carpetaService.destacar(this.carpeta()._id).subscribe(() => this.cambio.emit());
   }
 
   eliminar() {
-    if (!confirm(`¿Eliminar la carpeta "${this.carpeta().nombre}"?`)) return;
-    console.log('eliminar carpeta', this.carpeta()._id);
-    // this._carpetaService.eliminar(this.carpeta()._id).subscribe(() => this.cambio.emit());
+    this._carpetaService.eliminarCarpeta(this.carpeta()._id).subscribe({
+      next: () => {
+        this.cambio.emit();
+      },
+      error: (error: HttpErrorResponse) => {
+        const mensaje = error.error.message ?? 'error al eliminarCarpeta intente más tarde';
+        this._errorService.mostrarMensaje(mensaje);
+      },
+    });
   }
 
   cargarDetalles() {
-    // subconsulta, no recarga
     this.detalles.set(null);
     console.log('detalles carpeta', this.carpeta()._id);
-    // this._carpetaService.obtenerDetalles(this.carpeta()._id).subscribe(d => this.detalles.set(d));
-    const c = this.carpeta(); // datos de ejemplo, reemplazar por la subconsulta
+    const c = this.carpeta();
     this.detalles.set({
       propietario: c.propietario_id,
       creado: c.createdAt,

@@ -44,8 +44,11 @@ export class DocumentoController {
     return this.documentoService.update(+id, updateDocumentoDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.documentoService.remove(+id);
+  @Delete('papelera/:id')
+  async remove(
+    @Param('id') id: string,
+    @GetUsuario() usuario: UsuarioDocument,
+  ) {
+    return await this.documentoService.remove(id, usuario);
   }
 }

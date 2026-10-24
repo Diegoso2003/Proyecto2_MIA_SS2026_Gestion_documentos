@@ -18,4 +18,8 @@ export class CarpetaService {
   obtenerDocumentosPorCarpeta(id: string): Observable<ContenidoCarpeta> {
     return this._http.get<ContenidoCarpeta>(`${this.url}/${id}`);
   }
+
+  eliminarCarpeta(id: string): Observable<void> {
+    return this._http.delete<void>(`${this.url}/papelera/${id}`);
+  }
 }

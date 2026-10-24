@@ -44,4 +44,47 @@ export class CarpetaRepositoryService {
       })
       .populate<{ ancestros: DatosAncestro[] }>('ancestros', 'nombre');
   }
+
+  async borrarSubcarpetas(fecha: Date, id: Types.ObjectId) {
+    await this.carpetaModel.updateMany(
+      {
+        ancestros: id,
+        fecha_eliminacion: null,
+      },
+      { $set: { fecha_eliminacion: fecha, eliminado_individual: false } },
+    );
+  }
+
+  async obtenerPorId(id: string) {
+    return this.carpetaModel.findById(id);
+  }
+
+  async existeCarpetaConNombreEnPadre(
+    padreId: string,
+    nombre: string,
+    usuarioId: Types.ObjectId,
+  ): Promise<boolean> {
+    const existente = await this.carpetaModel.findOne({
+      padre_id: new Types.ObjectId(padreId),
+      propietario_id: usuarioId,
+      nombre,
+      fecha_eliminacion: null,
+    });
+
+    return existente !== null;
+  }
+
+  async existeCarpetaRaizConNombre(
+    nombre: string,
+    usuarioId: Types.ObjectId,
+  ): Promise<boolean> {
+    const existente = await this.carpetaModel.findOne({
+      padre_id: null,
+      propietario_id: usuarioId,
+      nombre,
+      fecha_eliminacion: null,
+    });
+
+    return existente !== null;
+  }
 }
