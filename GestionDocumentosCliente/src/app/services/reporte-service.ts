@@ -6,6 +6,7 @@ import { ReporteArchivosPorTipo } from '../models/reportes/reporte-response';
 import { ReporteArchivosPorRango } from '../models/reportes/reporte-rango-fecha';
 import { ReporteArchivosMasOperaciones } from '../models/reportes/archivos-mas-operaciones';
 import { ReporteTopUsuariosArchivos } from '../models/reportes/top-usuarios-archivos';
+import { ReporteUsuariosMasCompartidos } from '../models/reportes/reporte-mas-compartidos';
 
 @Injectable({
   providedIn: 'root',
@@ -40,6 +41,14 @@ export class ReporteService {
     params: Record<string, string | boolean>,
   ): Observable<ReporteTopUsuariosArchivos> {
     return this._http.get<ReporteTopUsuariosArchivos>(`${this.url}/usuarios/top-archivos`, {
+      params: new HttpParams({ fromObject: params }),
+    });
+  }
+
+  usuariosMasCompartidos(
+    params: Record<string, string | number>,
+  ): Observable<ReporteUsuariosMasCompartidos> {
+    return this._http.get<ReporteUsuariosMasCompartidos>(`${this.url}/usuarios/mas-compartidos`, {
       params: new HttpParams({ fromObject: params }),
     });
   }

@@ -9,6 +9,8 @@ import { ReporteMasOperacionesService } from './reporte-mas-operaciones/reporte-
 import { ArchivosMasOperacionesDto } from './dto/archivos-mas-operaciones.dto.js';
 import { TopUsuariosArchivosDto } from './dto/top-usuarios-archivos.dto.js';
 import { TopUsuariosArchivosService } from './top-usuarios-archivos/top-usuarios-archivos.service.js';
+import { UsuariosMasCompartidosService } from './usuarios-mas-compartidos/usuarios-mas-compartidos.service.js';
+import { UsuariosMasCompartidosDto } from './dto/archivos-mas-compartidos.js';
 
 @Roles(Rol.ADMIN)
 @Controller('reportes')
@@ -18,6 +20,7 @@ export class ReportesController {
     private readonly archivosPorFecha: PorRangoFechasService,
     private readonly archivosMasOperaciones: ReporteMasOperacionesService,
     private readonly usuariosArchivos: TopUsuariosArchivosService,
+    private readonly masCompartidos: UsuariosMasCompartidosService,
   ) {}
   @Get('archivos/por-tipo')
   async archivosPorTipo(@Query() q: ArchivosPorTipoDto) {
@@ -34,7 +37,12 @@ export class ReportesController {
   }
 
   @Get('usuarios/top-archivos')
-  topUsuariosArchivos(@Query() q: TopUsuariosArchivosDto) {
-    return this.usuariosArchivos.topUsuariosConArchivos(q);
+  async topUsuariosArchivos(@Query() q: TopUsuariosArchivosDto) {
+    return await this.usuariosArchivos.topUsuariosConArchivos(q);
+  }
+
+  @Get('usuarios/mas-compartidos')
+  async usuariosMasCompartidos(@Query() q: UsuariosMasCompartidosDto) {
+    return await this.masCompartidos.usuariosMasCompartidos(q);
   }
 }

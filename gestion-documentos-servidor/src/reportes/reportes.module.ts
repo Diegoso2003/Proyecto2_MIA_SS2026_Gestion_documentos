@@ -5,10 +5,11 @@ import { ArchivosPorTipoService } from './archivos-por-tipo/archivos-por-tipo.se
 import { PorRangoFechasService } from './por-rango-fechas/por-rango-fechas.service.js';
 import { ReporteMasOperacionesService } from './reporte-mas-operaciones/reporte-mas-operaciones.service.js';
 import { TopUsuariosArchivosService } from './top-usuarios-archivos/top-usuarios-archivos.service.js';
+import { UsuariosMasCompartidosService } from './usuarios-mas-compartidos/usuarios-mas-compartidos.service.js';
 
 @Module({
   imports: [DatabaseModule],
   controllers: [ReportesController],
-  providers: [ArchivosPorTipoService, PorRangoFechasService, ReporteMasOperacionesService, TopUsuariosArchivosService],
+  providers: [ArchivosPorTipoService, PorRangoFechasService, ReporteMasOperacionesService, TopUsuariosArchivosService, UsuariosMasCompartidosService],
 })
 export class ReportesModule {}
