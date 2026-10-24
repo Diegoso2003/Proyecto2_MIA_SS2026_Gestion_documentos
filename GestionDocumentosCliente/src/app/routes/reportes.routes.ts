@@ -38,6 +38,22 @@ export const REPORTES_ROUTES: Routes = [
           ),
       },
       {
+        path: 'usuarios-compartidos',
+        title: 'usuarios-compartidos',
+        loadComponent: () =>
+          import('../components/reportes/usuarios-mas-compartidos/usuarios-mas-compartidos').then(
+            (m) => m.UsuariosMasCompartidos,
+          ),
+      },
+      {
+        path: 'comparticion-archivos',
+        title: 'comparticion-archivos',
+        loadComponent: () =>
+          import('../components/reportes/archivos-mas-compartidos/archivos-mas-compartidos').then(
+            (m) => m.ArchivosMasCompartidos,
+          ),
+      },
+      {
         path: '',
         pathMatch: 'full',
         redirectTo: 'archivos-tipo',

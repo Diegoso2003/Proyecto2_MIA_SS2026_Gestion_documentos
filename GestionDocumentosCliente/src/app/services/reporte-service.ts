@@ -7,6 +7,7 @@ import { ReporteArchivosPorRango } from '../models/reportes/reporte-rango-fecha'
 import { ReporteArchivosMasOperaciones } from '../models/reportes/archivos-mas-operaciones';
 import { ReporteTopUsuariosArchivos } from '../models/reportes/top-usuarios-archivos';
 import { ReporteUsuariosMasCompartidos } from '../models/reportes/reporte-mas-compartidos';
+import { ReporteArchivosMasCompartidos } from '../models/reportes/archivo-mas-compartido';
 
 @Injectable({
   providedIn: 'root',
@@ -51,5 +52,14 @@ export class ReporteService {
     return this._http.get<ReporteUsuariosMasCompartidos>(`${this.url}/usuarios/mas-compartidos`, {
       params: new HttpParams({ fromObject: params }),
     });
+  }
+
+  archivosMasCompartidos(
+    params: Record<string, string | number>,
+  ): Observable<ReporteArchivosMasCompartidos> {
+    return this._http.get<ReporteArchivosMasCompartidos>(
+      `${this.url}/comparticion/archivos-mas-compartidos`,
+      { params: new HttpParams({ fromObject: params }) },
+    );
   }
 }
