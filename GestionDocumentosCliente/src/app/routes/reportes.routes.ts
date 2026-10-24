@@ -30,6 +30,14 @@ export const REPORTES_ROUTES: Routes = [
           ),
       },
       {
+        path: 'usuarios-top',
+        title: 'usuarios-top',
+        loadComponent: () =>
+          import('../components/reportes/top-usuarios-archivos/top-usuarios-archivos').then(
+            (m) => m.TopUsuariosArchivos,
+          ),
+      },
+      {
         path: '',
         pathMatch: 'full',
         redirectTo: 'archivos-tipo',

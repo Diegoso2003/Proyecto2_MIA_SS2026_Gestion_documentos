@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { ReporteArchivosPorTipo } from '../models/reportes/reporte-response';
 import { ReporteArchivosPorRango } from '../models/reportes/reporte-rango-fecha';
 import { ReporteArchivosMasOperaciones } from '../models/reportes/archivos-mas-operaciones';
+import { ReporteTopUsuariosArchivos } from '../models/reportes/top-usuarios-archivos';
 
 @Injectable({
   providedIn: 'root',
@@ -31,6 +32,14 @@ export class ReporteService {
     params: Record<string, string | number>,
   ): Observable<ReporteArchivosMasOperaciones> {
     return this._http.get<ReporteArchivosMasOperaciones>(`${this.url}/archivos/mas-operaciones`, {
+      params: new HttpParams({ fromObject: params }),
+    });
+  }
+
+  topUsuariosArchivos(
+    params: Record<string, string | boolean>,
+  ): Observable<ReporteTopUsuariosArchivos> {
+    return this._http.get<ReporteTopUsuariosArchivos>(`${this.url}/usuarios/top-archivos`, {
       params: new HttpParams({ fromObject: params }),
     });
   }

@@ -24,8 +24,6 @@ export class ReporteMasOperacionesService {
   constructor(
     @InjectModel(Documento.name)
     private readonly documentoModel: Model<DocumentoDocument>,
-    @InjectModel(Usuario.name)
-    private readonly usuarioModel: Model<UsuarioDocument>,
     @InjectModel(HistorialArchivo.name)
     private readonly historialArchivoModel: Model<HistorialArchivoDocument>,
   ) {}
