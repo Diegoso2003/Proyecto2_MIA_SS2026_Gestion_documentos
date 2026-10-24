@@ -6,21 +6,23 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { CompartidoService } from './compartido.service.js';
-import { CreateCompartidoDto } from './dto/create-compartido.dto.js';
-import { UpdateCompartidoDto } from './dto/update-compartido.dto.js';
 import { GetUsuario } from '../decorators/get-usuario/get-usuario.decorator.js';
 import type { UsuarioDocument } from '../database/usuario/schema/usuario.schema.js';
+import { ManejoPermisosService } from './manejo-permisos/manejo-permisos.service.js';
+import { ActualizarPermisoDto } from './dto/update-compartido.dto.js';
+import { RevocarPermisoDto } from './dto/rovocado-permiso.dto.js';
+import { ListarCompartidosDto } from './dto/listar-compartidos.dto.js';
+import { CompartirRecursoDto } from './dto/create-compartido.dto.js';
 
 @Controller('compartido')
 export class CompartidoController {
-  constructor(private readonly compartidoService: CompartidoService) {}
-
-  @Post()
-  create(@Body() createCompartidoDto: CreateCompartidoDto) {
-    return this.compartidoService.create(createCompartidoDto);
-  }
+  constructor(
+    private readonly compartidoService: CompartidoService,
+    private readonly manejoPermisos: ManejoPermisosService,
+  ) {}
 
   @Get('carpeta')
   async findAll(@GetUsuario() usuario: UsuarioDocument) {
@@ -35,16 +37,41 @@ export class CompartidoController {
     return await this.compartidoService.findOne(usuario, id);
   }
 
-  @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updateCompartidoDto: UpdateCompartidoDto,
-  ) {
-    return this.compartidoService.update(+id, updateCompartidoDto);
-  }
-
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.compartidoService.remove(+id);
+  }
+
+  @Get()
+  listar(
+    @GetUsuario() usuario: UsuarioDocument,
+    @Query() dto: ListarCompartidosDto,
+  ) {
+    return this.manejoPermisos.listar(usuario, dto);
+  }
+
+  @Post()
+  compartir(
+    @GetUsuario() usuario: UsuarioDocument,
+    @Body() dto: CompartirRecursoDto,
+  ) {
+    return this.manejoPermisos.compartir(usuario, dto);
+  }
+
+  @Patch('permiso')
+  actualizarPermiso(
+    @GetUsuario() usuario: UsuarioDocument,
+    @Body() dto: ActualizarPermisoDto,
+  ) {
+    return this.manejoPermisos.actualizarPermiso(usuario, dto);
+  }
+
+  @Delete('permiso')
+  async revocar(
+    @GetUsuario() usuario: UsuarioDocument,
+    @Body() dto: RevocarPermisoDto,
+  ) {
+    await this.manejoPermisos.revocar(usuario, dto);
+    return { mensaje: 'permiso revocado' };
   }
 }

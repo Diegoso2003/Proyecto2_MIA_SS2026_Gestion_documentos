@@ -1,6 +1,4 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateCompartidoDto } from './dto/create-compartido.dto.js';
-import { UpdateCompartidoDto } from './dto/update-compartido.dto.js';
 import {
   CarpetaElementosRequest,
   DatosAncestro,
@@ -17,9 +15,6 @@ export class CompartidoService {
     private readonly compartidoRepository: CompartidoRepositoryService,
     private readonly documentoRepository: DocumentoRepositoryService,
   ) {}
-  create(createCompartidoDto: CreateCompartidoDto) {
-    return 'This action adds a new compartido';
-  }
 
   async findAll(usuario: UsuarioDocument): Promise<CarpetaElementosRequest> {
     return {
@@ -62,10 +57,6 @@ export class CompartidoService {
       documentos:
         await this.documentoRepository.obtenerDocumentosPorCarpeta(carpetaId),
     };
-  }
-
-  update(id: number, updateCompartidoDto: UpdateCompartidoDto) {
-    return `This action updates a #${id} compartido`;
   }
 
   remove(id: number) {

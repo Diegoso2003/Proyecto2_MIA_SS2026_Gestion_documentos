@@ -10,6 +10,8 @@ import { formatTamano } from '../../../util/format';
 import { CarpetaService } from '../../../services/carpeta-service';
 import { ErrorService } from '../../../util/services/error-service';
 import { HttpErrorResponse } from '@angular/common/http';
+import { CompartidosDialog } from '../compartidos-dialog/compartidos-dialog';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-carpeta-item',
@@ -27,6 +29,7 @@ export class CarpetaItem {
   private _carpetaService = inject(CarpetaService);
   private _errorService = inject(ErrorService);
 
+  private _dialog = inject(MatDialog);
   detalles = signal<{ propietario: string; creado: string; ubicacion: string } | null>(null);
 
   descargar() {
@@ -34,9 +37,15 @@ export class CarpetaItem {
   }
 
   compartir() {
-    console.log('compartir carpeta', this.carpeta()._id);
+    this._dialog.open(CompartidosDialog, {
+      data: {
+        recursoId: this.carpeta()._id,
+        recursoTipo: 'carpeta',
+      },
+      width: '640px',
+      maxHeight: '90vh',
+    });
   }
-
   renombrar() {
     const nombre = prompt('Nuevo nombre', this.carpeta().nombre);
     if (!nombre || nombre === this.carpeta().nombre) return;

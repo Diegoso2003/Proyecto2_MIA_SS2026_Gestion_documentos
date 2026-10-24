@@ -9,6 +9,8 @@ import { Documento } from '../../../models/documentos/vista_documento';
 import { DocumentoService } from '../../../services/documento-service';
 import { ErrorService } from '../../../util/services/error-service';
 import { HttpErrorResponse } from '@angular/common/http';
+import { MatDialog } from '@angular/material/dialog';
+import { CompartidosDialog } from '../compartidos-dialog/compartidos-dialog';
 
 @Component({
   selector: 'app-documento-item',
@@ -23,6 +25,7 @@ export class DocumentoItem {
   permitirCompartir = input<boolean>(true);
   cambio = output<void>();
   private _documentoService = inject(DocumentoService);
+  private _dialog = inject(MatDialog);
   private _errorService = inject(ErrorService);
 
   detalles = signal<{
@@ -45,7 +48,14 @@ export class DocumentoItem {
   }
 
   compartir() {
-    console.log('compartir documento', this.documento()._id);
+    this._dialog.open(CompartidosDialog, {
+      data: {
+        recursoId: this.documento()._id,
+        recursoTipo: 'documento',
+      },
+      width: '640px',
+      maxHeight: '90vh',
+    });
   }
 
   renombrar() {

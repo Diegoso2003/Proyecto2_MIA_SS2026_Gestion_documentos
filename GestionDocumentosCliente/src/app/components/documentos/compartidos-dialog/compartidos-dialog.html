@@ -1,0 +1,67 @@
+<h2 mat-dialog-title>Compartir recurso</h2>
+
+<mat-dialog-content class="!max-w-2xl !w-[600px]">
+  @if (cargando()) {
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  }
+
+  <form
+    [formGroup]="form"
+    (ngSubmit)="crear()"
+    class="grid grid-cols-[1fr_140px_auto] gap-2 items-center mb-4"
+  >
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Correo del usuario</mat-label>
+      <input matInput type="email" formControlName="correo" placeholder="usuario@correo.com" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Permiso</mat-label>
+      <mat-select formControlName="permiso">
+        @for (p of permisos; track p) {
+          <mat-option [value]="p">{{ p }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || creando()">
+      Compartir
+    </button>
+  </form>
+
+  <mat-divider class="!my-2"></mat-divider>
+
+  <div class="text-sm text-gray-600 mb-2">Usuarios con acceso</div>
+
+  @if (compartidos().length === 0) {
+    <p class="text-gray-500 text-center py-4">Aún no has compartido este recurso con nadie.</p>
+  } @else {
+    <div class="flex flex-col divide-y">
+      @for (c of compartidos(); track c.usuario_destino_id) {
+        <div class="flex items-center gap-2 py-2">
+          <mat-icon>person</mat-icon>
+          <div class="flex flex-col flex-1 min-w-0">
+            <span class="truncate">{{ c.nombre }}</span>
+            <span class="text-xs text-gray-500 truncate">{{ c.correo }}</span>
+          </div>
+
+          <mat-form-field appearance="outline" class="w-36">
+            <mat-select [value]="c.permiso" (selectionChange)="cambiarPermiso(c, $event.value)">
+              @for (p of permisos; track p) {
+                <mat-option [value]="p">{{ p }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <button mat-icon-button matTooltip="Revocar acceso" (click)="revocar(c)">
+            <mat-icon>person_remove</mat-icon>
+          </button>
+        </div>
+      }
+    </div>
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cerrar()">Cerrar</button>
+</mat-dialog-actions>
