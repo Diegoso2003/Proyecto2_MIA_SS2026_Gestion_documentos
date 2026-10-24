@@ -18,7 +18,7 @@ export class UsuarioService {
     private readonly encriptador: EncriptadorService,
   ) {}
 
-  findAll(filtros: UsuarioFiltroDto) {
+  async findAll(filtros: UsuarioFiltroDto) {
     return this.usuarioRepository.buscarTodos(filtros);
   }
 

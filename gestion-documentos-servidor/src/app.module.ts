@@ -15,6 +15,7 @@ import { DestacadoModule } from './destacado/destacado.module.js';
 import { ComentarioModule } from './comentario/comentario.module.js';
 import { DocumentoModule } from './documento/documento.module.js';
 import { DatabaseModule } from './database/database.module.js';
+import { PapeleraModule } from './papelera/papelera.module.js';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { DatabaseModule } from './database/database.module.js';
     ComentarioModule,
     DocumentoModule,
     DatabaseModule,
+    PapeleraModule,
   ],
   controllers: [AppController],
   providers: [

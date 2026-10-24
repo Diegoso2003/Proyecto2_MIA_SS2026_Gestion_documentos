@@ -15,6 +15,9 @@ import { Documento } from '../../../models/documentos/vista_documento';
 })
 export class DocumentoItem {
   documento = input.required<Documento>();
+  permitirRenombrar = input<boolean>(true);
+  permitirEliminar = input<boolean>(true);
+  permitirCompartir = input<boolean>(true);
   cambio = output<void>(); // el padre recarga la lista cuando se emite
   // private _documentoService = inject(DocumentoService);
 

@@ -15,12 +15,16 @@
     <button mat-icon-button matTooltip="Descargar" (click)="descargar()">
       <mat-icon>download</mat-icon>
     </button>
-    <button mat-icon-button matTooltip="Compartir" (click)="compartir()">
-      <mat-icon>person_add</mat-icon>
-    </button>
-    <button mat-icon-button matTooltip="Eliminar" (click)="eliminar()">
-      <mat-icon>delete</mat-icon>
-    </button>
+    @if (permitirCompartir()) {
+      <button mat-icon-button matTooltip="Compartir" (click)="compartir()">
+        <mat-icon>person_add</mat-icon>
+      </button>
+    }
+    @if (permitirEliminar()) {
+      <button mat-icon-button matTooltip="Eliminar" (click)="eliminar()">
+        <mat-icon>delete</mat-icon>
+      </button>
+    }
     <button mat-icon-button matTooltip="Destacar" (click)="destacar()">
       <mat-icon>star_border</mat-icon>
     </button>
@@ -30,13 +34,19 @@
 
 <mat-menu #menu="matMenu">
   <button mat-menu-item (click)="descargar()"><mat-icon>download</mat-icon>Descargar</button>
-  <button mat-menu-item (click)="compartir()"><mat-icon>person_add</mat-icon>Compartir</button>
-  <button mat-menu-item (click)="renombrar()"><mat-icon>edit</mat-icon>Cambiar nombre</button>
+  @if (permitirCompartir()) {
+    <button mat-menu-item (click)="compartir()"><mat-icon>person_add</mat-icon>Compartir</button>
+  }
+  @if (permitirRenombrar()) {
+    <button mat-menu-item (click)="renombrar()"><mat-icon>edit</mat-icon>Cambiar nombre</button>
+  }
   <button mat-menu-item (click)="destacar()"><mat-icon>star_border</mat-icon>Destacar</button>
   <button mat-menu-item [matMenuTriggerFor]="detallesMenu" (menuOpened)="cargarDetalles()">
     <mat-icon>info</mat-icon>Ver detalles
   </button>
-  <button mat-menu-item (click)="eliminar()"><mat-icon>delete</mat-icon>Eliminar</button>
+  @if (permitirEliminar()) {
+    <button mat-menu-item (click)="eliminar()"><mat-icon>delete</mat-icon>Eliminar</button>
+  }
 </mat-menu>
 
 <mat-menu #detallesMenu="matMenu">

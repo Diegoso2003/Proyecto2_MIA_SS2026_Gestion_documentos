@@ -2,9 +2,9 @@ import { NodoMenu } from './nodo-menu';
 
 export const SECCIONES: NodoMenu[] = [
   { nombre: 'Mis documentos', icono: 'folder', ruta: '/inicio/mi-unidad' },
-  { nombre: 'Compartido conmigo', icono: 'group', ruta: '/inicio/compartido' },
+  { nombre: 'Compartido conmigo', icono: 'group', ruta: '/inicio/compartidos' },
   { nombre: 'Destacados', icono: 'star', ruta: '/inicio/destacados' },
-  { nombre: 'Papelera', icono: 'delete', ruta: '/papelera' },
+  { nombre: 'Papelera', icono: 'delete', ruta: '/inicio/papelera' },
 ];
 
 export const USUARIOS: NodoMenu = { nombre: 'Usuarios', icono: 'groups', ruta: '/inicio/usuarios' };

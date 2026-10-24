@@ -4,7 +4,7 @@ import { Usuario } from '../../usuario/schema/usuario.schema.js';
 
 export type DocumentoCompartidoDocument = HydratedDocument<DocumentoCompartido>;
 
-@Schema({ timestamps: true })
+@Schema({ timestamps: true, collection: 'documento_compartido' })
 export class DocumentoCompartido {
   @Prop({
     required: true,
@@ -15,6 +15,7 @@ export class DocumentoCompartido {
   @Prop({
     type: Types.ObjectId,
     required: true,
+    refPath: 'recurso_tipo',
   })
   recurso_id: Types.ObjectId;
 

@@ -16,6 +16,10 @@ import { formatTamano } from '../../../util/format';
 })
 export class CarpetaItem {
   carpeta = input.required<Carpeta>();
+  permitirRenombrar = input<boolean>(true);
+  permitirEliminar = input<boolean>(true);
+  permitirCompartir = input<boolean>(true);
+  carpetaCompartida = input<boolean>(false);
   cambio = output<void>(); // el padre recarga la lista cuando se emite
   // private _carpetaService = inject(CarpetaService);
 

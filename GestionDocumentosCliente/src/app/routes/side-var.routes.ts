@@ -23,6 +23,24 @@ export const SIDE_VAR_ROUTES: Routes = [
           ),
       },
       {
+        path: 'papelera',
+        title: 'Papelera',
+        loadComponent: () =>
+          import('../components/documentos/papelera/papelera').then((m) => m.Papelera),
+      },
+      {
+        path: 'compartidos',
+        title: 'Compartidos',
+        loadComponent: () =>
+          import('../components/documentos/compartidos/compartidos').then((m) => m.Compartidos),
+      },
+      {
+        path: 'compartidos/:id',
+        title: 'Compartidos',
+        loadComponent: () =>
+          import('../components/documentos/compartidos/compartidos').then((m) => m.Compartidos),
+      },
+      {
         path: 'usuarios',
         title: 'Usuarios',
         canMatch: [AdminGuard],

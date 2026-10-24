@@ -1,0 +1,56 @@
+<div class="p-4 max-w-5xl mx-auto">
+  @if (carpetaResource.isLoading()) {
+    <mat-progress-bar mode="indeterminate" />
+  }
+
+  @if (contenido()) {
+    <nav class="flex items-center justify-between gap-4 py-2">
+      <div class="flex items-center flex-wrap">
+        <a mat-button [routerLink]="['/']">Compartidos conmigo</a>
+        @for (a of contenido().ancestros; track a._id) {
+          <mat-icon>chevron_right</mat-icon>
+          <a mat-button [routerLink]="['/compartidos/carpeta', a._id]">{{ a.nombre }}</a>
+        }
+        @if (id()) {
+          <mat-icon>chevron_right</mat-icon>
+          <a mat-button class="font-bold" [routerLink]="['/compartidos/', id()]">
+            {{ contenido().nombre }}
+          </a>
+        }
+      </div>
+    </nav>
+
+    <div
+      class="grid grid-cols-[minmax(0,1fr)_160px_100px_240px] gap-4 px-4 py-2 border-b font-medium"
+    >
+      <span>Nombre</span>
+      <span>Última modificación</span>
+      <span>Tamaño</span>
+      <span></span>
+    </div>
+
+    @for (c of contenido().carpetas; track c._id) {
+      <app-carpeta-item
+        [carpeta]="c"
+        [permitirCompartir]="false"
+        [permitirRenombrar]="false"
+        [permitirEliminar]="false"
+        [carpetaCompartida]="true"
+        (cambio)="recargar()"
+      />
+    }
+    @for (d of contenido().documentos; track d._id) {
+      <app-documento-item
+        [documento]="d"
+        [permitirCompartir]="false"
+        [permitirRenombrar]="false"
+        [permitirEliminar]="false"
+        (cambio)="recargar()"
+      />
+    }
+
+    @if (!contenido().carpetas.length && !contenido().documentos.length) {
+      <p class="p-8 text-center opacity-60">No hay elementos compartidos contigo</p>
+    }
+  }
+</div>

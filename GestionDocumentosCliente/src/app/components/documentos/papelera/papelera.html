@@ -1,0 +1,135 @@
+<div class="p-4 max-w-6xl mx-auto">
+  <div class="flex items-center justify-between gap-4 mb-2">
+    <div class="flex items-baseline gap-3">
+      <h2 class="text-xl m-0">Papelera</h2>
+      @if (!vacia()) {
+        <span class="text-sm opacity-60">
+          {{ total() }} {{ total() === 1 ? 'elemento' : 'elementos' }}
+        </span>
+      }
+    </div>
+    <button
+      mat-flat-button
+      color="warn"
+      [disabled]="vacia() || cargando()"
+      (click)="vaciarPapelera()"
+    >
+      <mat-icon>delete_sweep</mat-icon>
+      Vaciar papelera
+    </button>
+  </div>
+
+  @if (cargando()) {
+    <mat-progress-bar mode="indeterminate" />
+  }
+
+  @if (contenido()) {
+    <div
+      class="grid grid-cols-[minmax(0,1.4fr)_minmax(0,1.6fr)_170px_110px_120px] gap-4 px-4 py-2 mt-4 border-b font-medium text-sm"
+    >
+      <span>Nombre</span>
+      <span>Ubicación original</span>
+      <span>Fecha de eliminación</span>
+      <span class="text-right">Tamaño</span>
+      <span class="text-right">Acciones</span>
+    </div>
+
+    @for (c of contenido().carpetas; track c._id) {
+      <div
+        class="grid grid-cols-[minmax(0,1.4fr)_minmax(0,1.6fr)_170px_110px_120px] items-center gap-4 px-4 py-1 border-b hover:bg-black/5"
+      >
+        <div class="flex items-center gap-3 truncate" [title]="c.nombre">
+          <mat-icon>folder</mat-icon>
+          <span class="truncate">{{ c.nombre }}</span>
+        </div>
+
+        <span class="truncate text-sm opacity-80" [title]="rutaCompleta(c.ancestros)">
+          {{ ubicacion(c.ancestros) }}
+        </span>
+
+        <span class="text-sm">
+          {{ c.fecha_eliminacion ? (c.fecha_eliminacion | date: 'dd/MM/yyyy HH:mm') : '--' }}
+        </span>
+
+        <span class="text-sm text-right">--</span>
+
+        <div class="flex items-center justify-end">
+          <button mat-icon-button matTooltip="Restaurar" (click)="restaurarCarpeta(c._id)">
+            <mat-icon>restore_from_trash</mat-icon>
+          </button>
+          <button
+            mat-icon-button
+            matTooltip="Eliminar definitivamente"
+            (click)="eliminarCarpeta(c._id, c.nombre)"
+          >
+            <mat-icon>delete_forever</mat-icon>
+          </button>
+          <button mat-icon-button [matMenuTriggerFor]="menuCarpeta">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          <mat-menu #menuCarpeta="matMenu">
+            <button mat-menu-item (click)="restaurarCarpeta(c._id)">
+              <mat-icon>restore_from_trash</mat-icon>
+              <span>Restaurar</span>
+            </button>
+            <button mat-menu-item (click)="eliminarCarpeta(c._id, c.nombre)">
+              <mat-icon>delete_forever</mat-icon>
+              <span>Eliminar definitivamente</span>
+            </button>
+          </mat-menu>
+        </div>
+      </div>
+    }
+
+    @for (d of contenido().documentos; track d._id) {
+      <div
+        class="grid grid-cols-[minmax(0,1.4fr)_minmax(0,1.6fr)_170px_110px_120px] items-center gap-4 px-4 py-1 border-b hover:bg-black/5"
+      >
+        <div class="flex items-center gap-3 truncate" [title]="d.nombre">
+          <mat-icon>description</mat-icon>
+          <span class="truncate">{{ d.nombre }}</span>
+        </div>
+
+        <span class="truncate text-sm opacity-80" [title]="rutaCompleta(d.ancestros)">
+          {{ ubicacion(d.ancestros) }}
+        </span>
+
+        <span class="text-sm">
+          {{ d.fecha_eliminacion ? (d.fecha_eliminacion | date: 'dd/MM/yyyy HH:mm') : '--' }}
+        </span>
+
+        <span class="text-sm text-right">{{ tamano(d.tamano_bytes) }}</span>
+
+        <div class="flex items-center justify-end">
+          <button mat-icon-button matTooltip="Restaurar" (click)="restaurarDocumento(d._id)">
+            <mat-icon>restore_from_trash</mat-icon>
+          </button>
+          <button
+            mat-icon-button
+            matTooltip="Eliminar definitivamente"
+            (click)="eliminarDocumento(d._id, d.nombre)"
+          >
+            <mat-icon>delete_forever</mat-icon>
+          </button>
+          <button mat-icon-button [matMenuTriggerFor]="menuDoc">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          <mat-menu #menuDoc="matMenu">
+            <button mat-menu-item (click)="restaurarDocumento(d._id)">
+              <mat-icon>restore_from_trash</mat-icon>
+              <span>Restaurar</span>
+            </button>
+            <button mat-menu-item (click)="eliminarDocumento(d._id, d.nombre)">
+              <mat-icon>delete_forever</mat-icon>
+              <span>Eliminar definitivamente</span>
+            </button>
+          </mat-menu>
+        </div>
+      </div>
+    }
+
+    @if (vacia()) {
+      <p class="p-8 text-center opacity-60">La papelera está vacía</p>
+    }
+  }
+</div>

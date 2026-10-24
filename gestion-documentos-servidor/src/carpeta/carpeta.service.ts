@@ -2,17 +2,14 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateCarpetaDto } from './dto/create-carpeta.dto.js';
 import { UpdateCarpetaDto } from './dto/update-carpeta.dto.js';
 import { CarpetaRepositoryService } from '../database/carpeta/carpeta-repository/carpeta-repository.service.js';
-import { CompartidoRepositoryService } from '../database/compartido/compartido-repository/compartido-repository.service.js';
 import { UsuarioDocument } from '../database/usuario/schema/usuario.schema.js';
 import { DocumentoRepositoryService } from '../database/documento/documento-repository/documento-repository.service.js';
 import { CarpetaElementosRequest } from './dto/carpeta-elementos-request.dto.js';
-import { CarpetaDocument } from '../database/carpeta/schema/carpeta.schema.js';
 
 @Injectable()
 export class CarpetaService {
   constructor(
     private readonly carpetaRepasitory: CarpetaRepositoryService,
-    private readonly compartidoRepository: CompartidoRepositoryService,
     private readonly documentoRepository: DocumentoRepositoryService,
   ) {}
   create(createCarpetaDto: CreateCarpetaDto) {
@@ -34,8 +31,6 @@ export class CarpetaService {
   ): Promise<CarpetaElementosRequest> {
     const carpeta = await this.carpetaRepasitory.obtenerCarpeta(carpetaId);
     if (!carpeta || carpeta.fecha_eliminacion !== null) {
-      console.log(carpetaId);
-      console.log(carpeta);
       throw new NotFoundException('carpeta no encontrada');
     }
     if (carpeta.propietario_id.toString() === usuario._id.toString()) {
@@ -47,8 +42,6 @@ export class CarpetaService {
           await this.documentoRepository.obtenerDocumentosPorCarpeta(carpetaId),
       };
     }
-    console.log(carpetaId);
-    console.log(carpeta);
 
     throw new NotFoundException('carpeta no encontrada');
   }
