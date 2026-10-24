@@ -77,41 +77,42 @@ export class Papelera implements OnInit {
   }
 
   restaurarCarpeta(id: string): void {
-    /**
-    this._papeleraService.restaurarCarpeta(id).subscribe({
-      next: () => this.cargar(),
-      error: (err: HttpErrorResponse) =>
-        this._errorInfo.mostrarMensaje(err?.error?.message ?? 'Error al restaurar la carpeta'),
-    });*/
+    this._papeleraService.restaurarCarpetas(id).subscribe({
+      next: () => {
+        this.cargar();
+      },
+      error: (err: HttpErrorResponse) => {
+        this._errorInfo.mostrarMensaje(err.error.message ?? 'error al restaurar la carpeta');
+      },
+    });
   }
 
   restaurarDocumento(id: string): void {
-    /*
-    this._papeleraService.restaurarDocumento(id).subscribe({
+    this._papeleraService.restaurarArchivo(id).subscribe({
       next: () => this.cargar(),
       error: (err: HttpErrorResponse) =>
         this._errorInfo.mostrarMensaje(err?.error?.message ?? 'Error al restaurar el documento'),
-    });*/
+    });
   }
 
   eliminarCarpeta(id: string, nombre: string): void {
-    /* if (!confirm(`¿Eliminar definitivamente la carpeta "${nombre}"? No se puede deshacer.`)) return;
+    if (!confirm(`¿Eliminar definitivamente la carpeta "${nombre}"? No se puede deshacer.`)) return;
 
-    this._papeleraService.eliminarCarpetaDefinitivo(id).subscribe({
+    this._papeleraService.eliminarCarpeta(id).subscribe({
       next: () => this.cargar(),
       error: (err: HttpErrorResponse) =>
         this._errorInfo.mostrarMensaje(err?.error?.message ?? 'Error al eliminar la carpeta'),
-    });*/
+    });
   }
 
   eliminarDocumento(id: string, nombre: string): void {
-    /*if (!confirm(`¿Eliminar definitivamente "${nombre}"? No se puede deshacer.`)) return;
+    if (!confirm(`¿Eliminar definitivamente "${nombre}"? No se puede deshacer.`)) return;
 
-    this._papeleraService.eliminarDocumentoDefinitivo(id).subscribe({
+    this._papeleraService.eliminarArchivo(id).subscribe({
       next: () => this.cargar(),
       error: (err: HttpErrorResponse) =>
         this._errorInfo.mostrarMensaje(err?.error?.message ?? 'Error al eliminar el documento'),
-    });*/
+    });
   }
 
   vaciarPapelera(): void {

@@ -14,4 +14,20 @@ export class PapeleraService {
   obtenerPapelera(): Observable<ContenidoPapelera> {
     return this._http.get<ContenidoPapelera>(`${this.url}`);
   }
+
+  restaurarArchivo(id: string): Observable<void> {
+    return this._http.patch<void>(`${this.url}/restaurar-archivo/${id}`, {});
+  }
+
+  restaurarCarpetas(id: string): Observable<void> {
+    return this._http.patch<void>(`${this.url}/restaurar-carpeta/${id}`, {});
+  }
+
+  eliminarArchivo(id: string): Observable<void> {
+    return this._http.delete<void>(`${this.url}/documento/${id}`);
+  }
+
+  eliminarCarpeta(id: string): Observable<void> {
+    return this._http.delete<void>(`${this.url}/carpeta/${id}`);
+  }
 }

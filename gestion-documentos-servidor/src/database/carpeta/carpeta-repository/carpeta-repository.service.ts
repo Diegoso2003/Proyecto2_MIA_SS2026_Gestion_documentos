@@ -87,4 +87,21 @@ export class CarpetaRepositoryService {
 
     return existente !== null;
   }
+
+  async actualizar(
+    id: Types.ObjectId,
+    cambios: Partial<CarpetaDocument>,
+  ) {
+    return this.carpetaModel.updateOne({ _id: id }, { $set: cambios });
+  }
+
+  async restaurarSubcarpetas(carpetaId: Types.ObjectId) {
+    await this.carpetaModel.updateMany(
+      {
+        ancestros: carpetaId,
+        eliminado_individual: false,
+      },
+      { $set: { fecha_eliminacion: null } },
+    );
+  }
 }

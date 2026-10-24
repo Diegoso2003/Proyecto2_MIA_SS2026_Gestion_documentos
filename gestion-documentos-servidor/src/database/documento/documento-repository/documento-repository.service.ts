@@ -79,4 +79,20 @@ export class DocumentoRepositoryService {
 
     return existente !== null;
   }
+
+  async restaurarArchivosEnCarpeta(carpetaId: Types.ObjectId) {
+    await this.documentoModel.updateMany(
+      {
+        ancestros: carpetaId,
+        fecha_eliminacion: { $ne: null },
+        eliminado_individual: false,
+      },
+      { $set: { fecha_eliminacion: null } },
+    );
+  }
+
+  async actualizar(id: Types.ObjectId, cambios: Partial<DocumentoDocument>) {
+    return this.documentoModel.updateOne({ _id: id }, { $set: cambios });
+  }
+
 }
