@@ -44,6 +44,7 @@ export class Carpeta {
     default: null,
   })
   fecha_eliminacion: Date | null;
+  createdAt: Date;
 }
 
 export const CarpetaSchema = SchemaFactory.createForClass(Carpeta);

@@ -13,6 +13,8 @@ import { UsuariosMasCompartidosService } from './usuarios-mas-compartidos/usuari
 import { UsuariosMasCompartidosDto } from './dto/archivos-mas-compartidos.js';
 import { ArchivosMasCompartidosService } from './archivos-mas-compartidos/archivos-mas-compartidos.service.js';
 import { ArchivosMasCompartidosDto } from './dto/archivos-mas-compartidos.dto.js';
+import { ComparticionUsuarioService } from './comparticion-usuario/comparticion-usuario.service.js';
+import { RecursosUsuarioDto } from './dto/recursos-usuario.dto.js';
 
 @Roles(Rol.ADMIN)
 @Controller('reportes')
@@ -24,6 +26,7 @@ export class ReportesController {
     private readonly usuariosArchivos: TopUsuariosArchivosService,
     private readonly masCompartidos: UsuariosMasCompartidosService,
     private readonly archivosMasComp: ArchivosMasCompartidosService,
+    private readonly comparticionUsuario: ComparticionUsuarioService,
   ) {}
   @Get('archivos/por-tipo')
   async archivosPorTipo(@Query() q: ArchivosPorTipoDto) {
@@ -52,5 +55,10 @@ export class ReportesController {
   @Get('comparticion/archivos-mas-compartidos')
   async archivosMasCompartidos(@Query() q: ArchivosMasCompartidosDto) {
     return await this.archivosMasComp.archivosMasCompartidos(q);
+  }
+
+  @Get('comparticion/compartidos-por-usuario')
+  compartidosPorUsuario(@Query() q: RecursosUsuarioDto) {
+    return this.comparticionUsuario.compartidosPorUsuario(q);
   }
 }

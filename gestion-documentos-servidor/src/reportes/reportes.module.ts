@@ -7,10 +7,11 @@ import { ReporteMasOperacionesService } from './reporte-mas-operaciones/reporte-
 import { TopUsuariosArchivosService } from './top-usuarios-archivos/top-usuarios-archivos.service.js';
 import { UsuariosMasCompartidosService } from './usuarios-mas-compartidos/usuarios-mas-compartidos.service.js';
 import { ArchivosMasCompartidosService } from './archivos-mas-compartidos/archivos-mas-compartidos.service.js';
+import { ComparticionUsuarioService } from './comparticion-usuario/comparticion-usuario.service.js';
 
 @Module({
   imports: [DatabaseModule],
   controllers: [ReportesController],
-  providers: [ArchivosPorTipoService, PorRangoFechasService, ReporteMasOperacionesService, TopUsuariosArchivosService, UsuariosMasCompartidosService, ArchivosMasCompartidosService],
+  providers: [ArchivosPorTipoService, PorRangoFechasService, ReporteMasOperacionesService, TopUsuariosArchivosService, UsuariosMasCompartidosService, ArchivosMasCompartidosService, ComparticionUsuarioService],
 })
 export class ReportesModule {}

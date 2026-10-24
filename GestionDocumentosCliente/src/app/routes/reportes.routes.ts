@@ -54,6 +54,14 @@ export const REPORTES_ROUTES: Routes = [
           ),
       },
       {
+        path: 'comparticion-enviados',
+        title: 'comparticion-enviados',
+        loadComponent: () =>
+          import('../components/reportes/compartidos-por-usuario/compartidos-por-usuario').then(
+            (m) => m.CompartidosPorUsuario,
+          ),
+      },
+      {
         path: '',
         pathMatch: 'full',
         redirectTo: 'archivos-tipo',

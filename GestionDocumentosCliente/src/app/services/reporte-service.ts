@@ -8,6 +8,7 @@ import { ReporteArchivosMasOperaciones } from '../models/reportes/archivos-mas-o
 import { ReporteTopUsuariosArchivos } from '../models/reportes/top-usuarios-archivos';
 import { ReporteUsuariosMasCompartidos } from '../models/reportes/reporte-mas-compartidos';
 import { ReporteArchivosMasCompartidos } from '../models/reportes/archivo-mas-compartido';
+import { ReporteComparticionesUsuario } from '../models/reportes/reporte-comparticion-usuario';
 
 @Injectable({
   providedIn: 'root',
@@ -59,6 +60,13 @@ export class ReporteService {
   ): Observable<ReporteArchivosMasCompartidos> {
     return this._http.get<ReporteArchivosMasCompartidos>(
       `${this.url}/comparticion/archivos-mas-compartidos`,
+      { params: new HttpParams({ fromObject: params }) },
+    );
+  }
+
+  compartidosPorUsuario(params: Record<string, string>): Observable<ReporteComparticionesUsuario> {
+    return this._http.get<ReporteComparticionesUsuario>(
+      `${this.url}/comparticion/compartidos-por-usuario`,
       { params: new HttpParams({ fromObject: params }) },
     );
   }
