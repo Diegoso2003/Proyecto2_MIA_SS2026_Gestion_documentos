@@ -46,6 +46,17 @@ export class ComparticionUsuarioService {
     );
   }
 
+  async recibidosPorUsuario(
+    q: RecursosUsuarioDto,
+  ): Promise<ReporteComparticionesUsuario> {
+    return this.comparticionesDeUsuario(
+      q,
+      'usuario_destino_id',
+      'propietario_id',
+      'Recursos recibidos',
+    );
+  }
+
   private async comparticionesDeUsuario(
     q: RecursosUsuarioDto,
     campoUsuario: 'propietario_id' | 'usuario_destino_id',

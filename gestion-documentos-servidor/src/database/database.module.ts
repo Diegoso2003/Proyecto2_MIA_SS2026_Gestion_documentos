@@ -27,6 +27,10 @@ import {
   HistorialArchivo,
   HistorialArchivoSchema,
 } from './historial-archivo/schema/historial-archivo.schema.js';
+import {
+  Historial,
+  HistorialSchema,
+} from './historial/schema/historial.schema.js';
 
 @Module({
   imports: [
@@ -41,6 +45,7 @@ import {
       { name: Destacado.name, schema: DestacadoSchema },
       { name: DocumentoCompartido.name, schema: DocumentoCompartidoSchema },
       { name: HistorialArchivo.name, schema: HistorialArchivoSchema },
+      { name: Historial.name, schema: HistorialSchema },
     ]),
   ],
   providers: [

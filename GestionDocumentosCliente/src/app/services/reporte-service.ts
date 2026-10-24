@@ -9,6 +9,10 @@ import { ReporteTopUsuariosArchivos } from '../models/reportes/top-usuarios-arch
 import { ReporteUsuariosMasCompartidos } from '../models/reportes/reporte-mas-compartidos';
 import { ReporteArchivosMasCompartidos } from '../models/reportes/archivo-mas-compartido';
 import { ReporteComparticionesUsuario } from '../models/reportes/reporte-comparticion-usuario';
+import { ReporteHistorialUsuario } from '../models/reportes/historial-usuario';
+import { ReporteActividadPorTipo } from '../models/reportes/actividad-por-tipo';
+import { ReporteActividadPorPeriodo } from '../models/reportes/actividad-por-periodo';
+import { ReportePrincipalesAcciones } from '../models/reportes/principales-acciones';
 
 @Injectable({
   providedIn: 'root',
@@ -67,6 +71,40 @@ export class ReporteService {
   compartidosPorUsuario(params: Record<string, string>): Observable<ReporteComparticionesUsuario> {
     return this._http.get<ReporteComparticionesUsuario>(
       `${this.url}/comparticion/compartidos-por-usuario`,
+      { params: new HttpParams({ fromObject: params }) },
+    );
+  }
+
+  recibidosPorUsuario(params: Record<string, string>): Observable<ReporteComparticionesUsuario> {
+    return this._http.get<ReporteComparticionesUsuario>(
+      `${this.url}/comparticion/recibidos-por-usuario`,
+      { params: new HttpParams({ fromObject: params }) },
+    );
+  }
+
+  historialUsuario(params: Record<string, string | number>): Observable<ReporteHistorialUsuario> {
+    return this._http.get<ReporteHistorialUsuario>(`${this.url}/actividad/historial-usuario`, {
+      params: new HttpParams({ fromObject: params }),
+    });
+  }
+
+  actividadPorTipo(params: Record<string, string>): Observable<ReporteActividadPorTipo> {
+    return this._http.get<ReporteActividadPorTipo>(`${this.url}/actividad/por-tipo`, {
+      params: new HttpParams({ fromObject: params }),
+    });
+  }
+
+  actividadPorPeriodo(params: Record<string, string>): Observable<ReporteActividadPorPeriodo> {
+    return this._http.get<ReporteActividadPorPeriodo>(`${this.url}/actividad/por-periodo`, {
+      params: new HttpParams({ fromObject: params }),
+    });
+  }
+
+  principalesAcciones(
+    params: Record<string, string | number>,
+  ): Observable<ReportePrincipalesAcciones> {
+    return this._http.get<ReportePrincipalesAcciones>(
+      `${this.url}/actividad/principales-acciones`,
       { params: new HttpParams({ fromObject: params }) },
     );
   }

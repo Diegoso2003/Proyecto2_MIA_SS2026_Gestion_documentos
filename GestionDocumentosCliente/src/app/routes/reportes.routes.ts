@@ -62,6 +62,46 @@ export const REPORTES_ROUTES: Routes = [
           ),
       },
       {
+        path: 'comparticion-recibidos',
+        title: 'comparticion-recibidos',
+        loadComponent: () =>
+          import('../components/reportes/recibidos-por-usuario/recibidos-por-usuario').then(
+            (m) => m.RecibidosPorUsuario,
+          ),
+      },
+      {
+        path: 'actividad-historial',
+        title: 'actividad-historial',
+        loadComponent: () =>
+          import('../components/reportes/historial-usuario/historial-usuario').then(
+            (m) => m.HistorialUsuario,
+          ),
+      },
+      {
+        path: 'actividad-tipo',
+        title: 'actividad-tipo',
+        loadComponent: () =>
+          import('../components/reportes/historial-por-tipo/historial-por-tipo').then(
+            (m) => m.HistorialPorTipo,
+          ),
+      },
+      {
+        path: 'actividad-periodo',
+        title: 'actividad-periodo',
+        loadComponent: () =>
+          import('../components/reportes/actividad-por-periodo/actividad-por-periodo').then(
+            (m) => m.ActividadPorPeriodo,
+          ),
+      },
+      {
+        path: 'actividad-acciones',
+        title: 'actividad-acciones',
+        loadComponent: () =>
+          import('../components/reportes/principales-acciones-component/principales-acciones-component').then(
+            (m) => m.PrincipalesAccionesComponent,
+          ),
+      },
+      {
         path: '',
         pathMatch: 'full',
         redirectTo: 'archivos-tipo',

@@ -15,6 +15,14 @@ import { ArchivosMasCompartidosService } from './archivos-mas-compartidos/archiv
 import { ArchivosMasCompartidosDto } from './dto/archivos-mas-compartidos.dto.js';
 import { ComparticionUsuarioService } from './comparticion-usuario/comparticion-usuario.service.js';
 import { RecursosUsuarioDto } from './dto/recursos-usuario.dto.js';
+import { HistorialUsuarioService } from './historial-usuario/historial-usuario.service.js';
+import { HistorialUsuarioDto } from './dto/historial-usuario.dto.js';
+import { ActividadPorTipoService } from './actividad-por-tipo/actividad-por-tipo.service.js';
+import { ActividadPorTipoDto } from './dto/actividad-por-tipo.dto.js';
+import { ActividadPorPeriodoDto } from './dto/actividad-por-periodo.dto.js';
+import { ActividadPorPeriodoService } from './actividad-por-periodo/actividad-por-periodo.service.js';
+import { PrincipalesAccionesService } from './principales-acciones/principales-acciones.service.js';
+import { PrincipalesAccionesDto } from './dto/principales-acciones.dto.js';
 
 @Roles(Rol.ADMIN)
 @Controller('reportes')
@@ -27,6 +35,10 @@ export class ReportesController {
     private readonly masCompartidos: UsuariosMasCompartidosService,
     private readonly archivosMasComp: ArchivosMasCompartidosService,
     private readonly comparticionUsuario: ComparticionUsuarioService,
+    private readonly historialUsuario: HistorialUsuarioService,
+    private readonly actividadTipo: ActividadPorTipoService,
+    private readonly actividadPeriodo: ActividadPorPeriodoService,
+    private readonly principalesAcciones: PrincipalesAccionesService,
   ) {}
   @Get('archivos/por-tipo')
   async archivosPorTipo(@Query() q: ArchivosPorTipoDto) {
@@ -58,7 +70,32 @@ export class ReportesController {
   }
 
   @Get('comparticion/compartidos-por-usuario')
-  compartidosPorUsuario(@Query() q: RecursosUsuarioDto) {
-    return this.comparticionUsuario.compartidosPorUsuario(q);
+  async compartidosPorUsuario(@Query() q: RecursosUsuarioDto) {
+    return await this.comparticionUsuario.compartidosPorUsuario(q);
+  }
+
+  @Get('comparticion/recibidos-por-usuario')
+  async recibidosPorUsuario(@Query() q: RecursosUsuarioDto) {
+    return await this.comparticionUsuario.recibidosPorUsuario(q);
+  }
+
+  @Get('actividad/historial-usuario')
+  async historialUsuarioResultado(@Query() q: HistorialUsuarioDto) {
+    return await this.historialUsuario.historialUsuario(q);
+  }
+
+  @Get('actividad/por-tipo')
+  async actividadPorTipo(@Query() q: ActividadPorTipoDto) {
+    return await this.actividadTipo.actividadPorTipo(q);
+  }
+
+  @Get('actividad/por-periodo')
+  async actividadPorPeriodo(@Query() q: ActividadPorPeriodoDto) {
+    return await this.actividadPeriodo.actividadPorPeriodo(q);
+  }
+
+  @Get('actividad/principales-acciones')
+  async principalesAccionesFunc(@Query() q: PrincipalesAccionesDto) {
+    return await this.principalesAcciones.principalesAcciones(q);
   }
 }

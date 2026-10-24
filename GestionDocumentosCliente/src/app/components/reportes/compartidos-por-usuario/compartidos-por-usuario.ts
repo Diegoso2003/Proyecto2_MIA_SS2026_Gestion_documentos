@@ -1,4 +1,4 @@
-import { DatePipe, DecimalPipe } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -30,7 +30,6 @@ import { HttpErrorResponse } from '@angular/common/http';
     MatProgressBarModule,
     MatChipsModule,
     MatIconModule,
-    DecimalPipe,
   ],
   templateUrl: './compartidos-por-usuario.html',
   styleUrl: './compartidos-por-usuario.css',
